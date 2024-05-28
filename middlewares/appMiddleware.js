@@ -45,6 +45,14 @@ const appLoginRequired = async (req, res, next) => {
     }
 };
 
+const appLogoutRequired = async (req, res, next) => {
+    const jwtToken = await getAuthorizationToken(req);
+    // check if token exits
+    if (jwtToken) res.redirect("/");
+    next();
+};
+
 module.exports = {
     appLoginRequired,
+    appLogoutRequired,
 };
