@@ -34,3 +34,9 @@ async function generalDataLoader({ url, func }) {
         console.log(data);
     }
 }
+
+function lastCursorFinder(containerClass, attrName) {
+    const container = document.querySelectorAll(`.${containerClass}`);
+    const lastCursor = container[container.length - 1].getAttribute(attrName);
+    return lastCursor;
+}

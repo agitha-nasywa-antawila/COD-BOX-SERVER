@@ -10,6 +10,7 @@ exports.adminRiwayatPesananPengguna = (req, res) => {
 exports.daftarPengguna = (req, res) => {
     const data = {
         layout: "layouts/admin_base",
+        scripts: ["admin_daftar_pengguna.js"],
     };
     res.render("admin_daftar_pengguna", data);
 };
