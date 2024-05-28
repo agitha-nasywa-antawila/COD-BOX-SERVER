@@ -6,6 +6,11 @@
     <title>Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/main.min.css">
+    {{#if styles}}
+        {{#each styles}}
+            <link rel="stylesheet" href="{{this}}">
+        {{/each}}
+    {{/if}}
 </head>
 <body class="bg-blue-900 flex justify-center items-center h-screen">
     <div class="bg-white p-8 rounded-lg w-96">
@@ -17,16 +22,23 @@
         </h2>
         <form>
             <div class="mb-4">
-                <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username {{nama}}</label>
                 <input type="text" id="username" name="username" class="border border-gray-300 p-2 w-full" placeholder="Your username">
             </div>
             <div class="mb-4">
                 <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
                 <input type="password" id="password" name="password" class="border border-gray-300 p-2 w-full" placeholder="Your password">
             </div>
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md w-full font-bold">Login</button>
+            <button type="submit" id="login-btn" class="bg-blue-500 text-white px-4 py-2 rounded-md w-full font-bold">Login</button>
         </form>
         <p class="mt-4 text-gray-600 text-sm text-center">Belum Punya Akun? <a href="/auth/register" class="text-blue-500 font-bold">Register</a></p>
     </div>
 </body>
+<script src="/js/util/httpRequest.js"></script>
+<script src="/js/util/timeformater.js"></script>
+{{#if scripts}}
+    {{#each scripts}}
+        <script src="/js/{{this}}"></script>
+    {{/each}}
+{{/if}}
 </html>
