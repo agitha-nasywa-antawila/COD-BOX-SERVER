@@ -68,7 +68,7 @@ const appAllowedRole = (...roles) => {
             if (userRole == "SUPER ADMIN")
                 res.redirect("/admin/transaksi/riwayat");
             if (userRole == "BASE") res.redirect("/user/transaksi/buat");
-            // if (userRole == "KURIR") res.redirect("/user/transaksi/buat");
+            if (userRole == "KURIR") res.redirect("/kurir/pesanan/antar");
         }
 
         if (roles.includes(userRole)) return next();
