@@ -24,6 +24,11 @@ const appLoginRequired = async (req, res, next) => {
                 id: true,
                 username: true,
                 updatedAt: true,
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
             },
         });
         if (
@@ -34,6 +39,9 @@ const appLoginRequired = async (req, res, next) => {
 
         if (!user) res.redirect("/auth/login");
 
+        req.username = user.username;
+        req.role = user.role.name;
+        req.userid = user.id;
         if (user) return next();
     } catch (error) {
         return resError({
@@ -52,7 +60,23 @@ const appLogoutRequired = async (req, res, next) => {
     next();
 };
 
+const appAllowedRole = (...roles) => {
+    return async (req, res, next) => {
+        const userRole = req.role;
+
+        if (!roles.includes(userRole)) {
+            if (userRole == "SUPER ADMIN")
+                res.redirect("/admin/transaksi/riwayat");
+            if (userRole == "BASE") res.redirect("/user/transaksi/buat");
+            // if (userRole == "KURIR") res.redirect("/user/transaksi/buat");
+        }
+
+        if (roles.includes(userRole)) return next();
+    };
+};
+
 module.exports = {
     appLoginRequired,
     appLogoutRequired,
+    appAllowedRole,
 };

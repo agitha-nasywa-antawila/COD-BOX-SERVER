@@ -1,8 +1,11 @@
 const router = require("express").Router();
-const { appLoginRequired } = require("../middlewares/appMiddleware");
+const {
+    appLoginRequired,
+    appAllowedRole,
+} = require("../middlewares/appMiddleware");
 const controller = require("./controller");
 
-router.use(appLoginRequired);
+router.use(appLoginRequired, appAllowedRole("SUPER ADMIN"));
 router.get("/transaksi/riwayat", controller.adminRiwayatPesananPengguna);
 router.get("/pengguna/daftar", controller.daftarPengguna);
 router.get("/transaksi/detail", controller.adminRiwayatDetail);

@@ -13,3 +13,8 @@ exports.register = (req, res) => {
     };
     res.render("auth_register", data);
 };
+
+exports.logout = (req, res) => {
+    res.cookie("Authorization", "", { maxAge: 1 });
+    res.redirect("/auth/login");
+};
