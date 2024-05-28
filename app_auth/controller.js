@@ -10,6 +10,7 @@ exports.login = (req, res) => {
 exports.register = (req, res) => {
     const data = {
         layout: "",
+        scripts: ["auth_register.js"],
     };
     res.render("auth_register", data);
 };
