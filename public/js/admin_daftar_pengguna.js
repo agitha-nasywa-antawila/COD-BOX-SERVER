@@ -3,6 +3,25 @@ const loadMoreDataButton = document.getElementById("load-more-data");
 const searchForm = document.getElementById("table-search");
 let counter = 1;
 
+const changeRole = async (username) => {
+    var newRole = document.getElementById(`select-for-${username}`).value;
+
+    const response = await httpRequest({
+        url: "/api/v1/role",
+        method: "PATCH",
+        body: {
+            username: username,
+            role: newRole,
+        },
+    });
+
+    if (response.success) {
+        alert(`Success change role`);
+    } else {
+        alert(`Failed to change role`);
+    }
+};
+
 const template = (no, data) => {
     const role = data.role.name;
     let isSuperAdmin, isBase, isKurir;
@@ -32,7 +51,7 @@ const template = (no, data) => {
                 ${data.email}
             </td>
             <td class="px-6 py-4">
-                <Select class="rounded-md">
+                <Select class="rounded-md" onchange="changeRole('${data.username}')" id="select-for-${data.username}">
                     <option value="SUPER ADMIN" ${isSuperAdmin}>SUPER ADMIN</option>
                     <option value="BASE" ${isBase}>BASE</option>
                     <option value="KURIR" ${isKurir}>KURIR</option>
