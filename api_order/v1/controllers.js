@@ -63,11 +63,16 @@ exports.createOrder = async (req, res) => {
 */
 exports.userOpenBox = async (req, res) => {
     const { nomor_resi } = req.body;
+    const type =
+        String(req.params?.type).toUpperCase() == "LACI" ? "LACI" : "BOX";
+    const userId = req.userid;
+
     try {
         // Pengecekan nomor resi, jika menggunakan online payment maka tidak perlu meletakan uang untuk COD
         const order = await prisma.order.findUnique({
             where: { resi: nomor_resi },
             select: {
+                id: true,
                 tipe_pembayaran: true,
                 deviceId: true,
             },
@@ -93,11 +98,35 @@ exports.userOpenBox = async (req, res) => {
             },
         });
 
+        let typeDescription;
+        if (type === "BOX") {
+            typeDescription = "PENGGUNA MEMBUKA BOX UNTUK MELETAKAN UANG";
+        } else {
+            typeDescription = "PENGGUNA MEMBUKA LACI UNTUK MELETAKAN UANG";
+        }
+
+        const kategori = await prisma.orderKategori.findUnique({
+            where: {
+                name: typeDescription,
+            },
+        });
+
+        if (!kategori) throw new Error("Kategori tidak ditemukan");
+
+        // Kita Buat Data Di Tabel Order Time Line
+        await prisma.orderTimeline.create({
+            data: {
+                orderId: order.id,
+                userId: userId,
+                orderKategoriId: kategori.id,
+            },
+        });
+
         return resSuccess({
             res,
             data: {
                 token: token,
-                type: "BOX",
+                type: type,
             },
         });
     } catch (error) {

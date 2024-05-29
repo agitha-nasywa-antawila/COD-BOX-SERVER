@@ -40,8 +40,8 @@ exports.openDevice = async (req, res) => {
         });
 
         if (!device) throw "Device tidak ditemukan";
-        if (device.token != token || device.token != null)
-            throw "Token tidak sesuai";
+        if (!device?.token) throw "Token tidak ditemukan";
+        if (device.token != token) throw "Token tidak sesuai";
         if (new Date(device.tokenExpiredAt) < new Date())
             throw "Token kadaluarsa";
 
