@@ -4,5 +4,6 @@ const c = require("./controllers");
 
 router.use(loginRequired);
 router.post("/owner", c.createOrder);
+router.post("/owner/generate-token/box", c.userOpenBox);
 
 module.exports = router;

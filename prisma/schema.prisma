@@ -50,12 +50,14 @@ model Profil {
 }
 
 model Device {
-  id        String   @id @default(cuid())
-  name      String?
-  kode      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  order     Order[]
+  id             String    @id @default(cuid())
+  name           String?
+  kode           String    @unique
+  token          String?
+  tokenExpiredAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  order          Order[]
 }
 
 model Order {

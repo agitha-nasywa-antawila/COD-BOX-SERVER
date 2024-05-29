@@ -4,6 +4,7 @@ const resError = ({
     errors,
     code = 500,
 }) => {
+    console.log(errors);
     return res.status(code).json({
         success: false,
         message: title,
