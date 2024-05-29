@@ -49,6 +49,15 @@ model Profil {
   updatedAt DateTime @updatedAt
 }
 
+model Device {
+  id        String   @id @default(cuid())
+  name      String?
+  kode      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     Order[]
+}
+
 model Order {
   id              String          @id @default(cuid())
   resi            String          @unique
@@ -63,6 +72,8 @@ model Order {
   Kurir         User?           @relation(fields: [kurirId], references: [id], name: "takeOrder")
   kurirId       String?
   OrderTimeline OrderTimeline[]
+  Device        Device?         @relation(fields: [deviceId], references: [id])
+  deviceId      String?
 }
 
 model OrderTimeline {
