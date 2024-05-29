@@ -3,8 +3,13 @@ const prisma = require("../../prisma/client");
 
 exports.createOrder = async (req, res) => {
     try {
-        const { nomor_resi, nomor_pesanan, harga_barang, tipe_pembayaran } =
-            req.body;
+        const {
+            nomor_resi,
+            nomor_pesanan,
+            harga_barang,
+            tipe_pembayaran,
+            cod_box_id,
+        } = req.body;
         const userId = req.userid;
 
         // Masukan Data Ke Tabel Order
@@ -14,6 +19,7 @@ exports.createOrder = async (req, res) => {
                 resi: nomor_resi,
                 harga_barang: harga_barang,
                 ownerId: userId,
+                deviceId: cod_box_id,
                 tipe_pembayaran:
                     String(tipe_pembayaran).toUpperCase() === "COD"
                         ? "COD"
