@@ -28,6 +28,11 @@ const loginRequired = async (req, res, next) => {
                 id: true,
                 username: true,
                 updatedAt: true,
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
             },
         });
         if (
@@ -47,6 +52,9 @@ const loginRequired = async (req, res, next) => {
                 location: "User authorization",
             });
 
+        req.username = user.username;
+        req.role = user.role.name;
+        req.userid = user.id;
         if (user) return next();
     } catch (error) {
         return resError({

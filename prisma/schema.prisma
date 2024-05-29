@@ -11,11 +11,11 @@ datasource db {
 }
 
 model Role {
-  id        String   @id @default(cuid())
-  name      String   @unique
+  id        String    @id @default(cuid())
+  name      String    @unique
   user      User[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model User {
@@ -30,7 +30,7 @@ model User {
   tokenExpiredAt    DateTime?
   tokenType         TOKEN_TYPE?
   createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  updatedAt         DateTime?       @updatedAt
   role              Role            @relation(fields: [roleId], references: [id])
   order             Order[]         @relation(name: "order") // Untuk Orang Yang Melakukan Order Barang
   takeOrder         Order[]         @relation(name: "takeOrder") // Untuk Kurir Yang Ngambil Barang
@@ -51,12 +51,12 @@ model Profil {
 
 model Order {
   id              String          @id @default(cuid())
-  resi            String
-  nomor_pesanan   String
+  resi            String          @unique
+  nomor_pesanan   String          @unique
   harga_barang    String
   tipe_pembayaran TIPE_PEMBAYARAN
   createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  updatedAt       DateTime?       @updatedAt
 
   Owner         User?           @relation(fields: [ownerId], references: [id], name: "order")
   ownerId       String?
@@ -74,7 +74,7 @@ model OrderTimeline {
   user            User          @relation(fields: [userId], references: [id])
   userId          String
   createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  updatedAt       DateTime?     @updatedAt
 }
 
 model OrderKategori {
