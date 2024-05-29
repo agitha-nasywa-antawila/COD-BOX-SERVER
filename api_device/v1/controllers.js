@@ -21,10 +21,51 @@ exports.createDevice = async (req, res) => {
             data: newDevice,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
-            title: "Failed to create locker device",
+            title: "Failed to create device",
+            errors: error,
+        });
+    }
+};
+
+exports.openDevice = async (req, res) => {
+    try {
+        const { kode_box, type, token } = req?.body;
+
+        const device = await prisma.device.findUnique({
+            where: {
+                kode: kode_box,
+            },
+        });
+
+        if (!device) throw "Device tidak ditemukan";
+        if (device.token != token || device.token != null)
+            throw "Token tidak sesuai";
+        if (new Date(device.tokenExpiredAt) < new Date())
+            throw "Token kadaluarsa";
+
+        await prisma.device.update({
+            where: {
+                id: device.id,
+            },
+            data: {
+                tokenExpiredAt: null,
+                token: null,
+            },
+        });
+
+        return resSuccess({
+            res,
+            title: "Success open box",
+            data: {
+                type,
+            },
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Failed to open device",
             errors: error,
         });
     }
