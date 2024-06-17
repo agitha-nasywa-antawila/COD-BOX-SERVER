@@ -61,7 +61,7 @@ exports.createOrder = async (req, res) => {
     kemudian akan mengembalikan data beruba sebuah token yang akan digunakan untuk membuka device
     URL tersebut berisi kode device dan token yang akan aktif selama 1 menit
 */
-exports.userOpenBox = async (req, res) => {
+exports.userGenerateTokenForOpenBox = async (req, res) => {
     const { nomor_resi } = req.body;
     const type =
         String(req.params?.type).toUpperCase() == "LACI" ? "LACI" : "BOX";
