@@ -8,6 +8,7 @@ const container = document.getElementById("container");
 const openBox = document.getElementById("box-toggle");
 const openDrawer = document.getElementById("drawer-toggle");
 const takeMoneyPicture = document.getElementById("take-money-picture");
+const takeGoodPicture = document.getElementById("take-good-picture");
 const deviceList = [];
 
 let storeNomorResi, storeNomorPesanan, storeCodBoxId;
@@ -324,6 +325,26 @@ takeMoneyPicture.addEventListener("click", async (e) => {
             }
         });
     }, 50);
+});
+
+takeGoodPicture.addEventListener("click", async (e) => {
+    e.preventDefault();
+    if (!storeNomorResi || !storeNomorPesanan) {
+        alert("Buat Pesanana Terlebih Dahulu");
+        return;
+    }
+
+    const resp = await httpRequest({
+        url: `/api/v1/order/owner/check-delivery/${storeNomorResi}`,
+        method: "GET",
+    });
+
+    if (resp.success) {
+        if (!resp.data.isGoodHasDeliver)
+            alert(
+                "Menu Belum Bisa Diakses Karena Pesanan Anda Belum Di Antar Kurir"
+            );
+    }
 });
 
 // Handle URL Change When Page First Load

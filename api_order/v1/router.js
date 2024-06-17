@@ -14,5 +14,6 @@ router.post(
     upload.single("file"),
     c.userTakeMoneyPicture
 );
+router.get("/owner/check-delivery/:nomor_resi", c.checkDeliveryStatus);
 
 module.exports = router;

@@ -193,7 +193,55 @@ exports.userTakeMoneyPicture = async (req, res) => {
             },
         });
     } catch (error) {
-        console.log(error);
+        return resError({ res, errors: error });
+    }
+};
+
+// Fungsi untuk melakukan pengecekan apakah kurir sudah mengirimkan paket
+/*
+    Fungsi ini akan di gunakan ketika user membuka tab "Foto Barang", ketika kurir belum meletakan barang
+    Maka user belum bisa mengakses tab tersebut dan menyelesaikan pesanan
+*/
+exports.checkDeliveryStatus = async (req, res) => {
+    try {
+        const { nomor_resi } = req.params;
+        const userId = req.userid;
+
+        const order = await prisma.order.findUnique({
+            where: { resi: nomor_resi },
+            select: {
+                id: true,
+            },
+        });
+
+        if (order == null) throw "Pesanan tidak ditemukan";
+
+        const orderTimeline = await prisma.orderTimeline.findMany({
+            where: {
+                userId: userId,
+                orderId: order.id,
+            },
+            select: {
+                kategori: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        const isGoodHasDeliver = orderTimeline.find(
+            (d) => d.kategori.name === "KURIR MELETAKAN BARANG"
+        );
+
+        return resSuccess({
+            res,
+            title: "Success get delivery status",
+            data: {
+                isGoodHasDeliver: isGoodHasDeliver ? true : false,
+            },
+        });
+    } catch (error) {
         return resError({ res, errors: error });
     }
 };
