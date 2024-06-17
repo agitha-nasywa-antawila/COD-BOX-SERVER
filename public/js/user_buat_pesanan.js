@@ -7,10 +7,12 @@ const saveButton = document.getElementById("simpan");
 const container = document.getElementById("container");
 const openBox = document.getElementById("box-toggle");
 const openDrawer = document.getElementById("drawer-toggle");
+const takeMoneyPicture = document.getElementById("take-money-picture");
 const deviceList = [];
 
 let storeNomorResi, storeNomorPesanan, storeCodBoxId;
 let boxType = "BOX"; // Value can be BOX or LACI
+let reTakeImage = false;
 
 function updateQueryParam(key, value) {
     const url = new URL(window.location.href);
@@ -92,6 +94,45 @@ function renderQRTemplate() {
                 onclick="generateQR()"
             >
                 Refresh QR
+            </button>
+        </div>
+    `;
+}
+
+function renderCameraTemplate() {
+    return `
+        <h1 class="text-xl mb-4 text-center text-purple-700 font-semibold">Ambil Foto</h1>
+        <p class="text-center mb-8 w-64 md:w-96 mx-auto text-slate-600">Arahkan Kamera Ke Tempat Anda Meletakan Uang</p>
+
+        <video id="video" width="640" height="480" class="aspect-square mb-4 mx-auto w-64 border rounded-md overflow-hidden " autoplay style="object-fit: cover;"></video>
+        <img id="capturedImage" width="640" height="480" src="" class="aspect-square mb-4 mx-auto w-64 border rounded-md overflow-hidden " alt="Captured Image" style="display:none; object-fit: cover;"/>
+        <canvas id="canvas" class="aspect-square mb-4 mx-auto w-64 border rounded-md overflow-hidden" style="display:none;"></canvas>
+
+        <div class="w-64 md:w-96 mx-auto bg-purple-200 p-2 rounded-md border border-purple-500 mb-4">
+            <h1 class="text-center text-purple-700 font-semibold">Arahkan Kamera Dengan Benar</h1>
+        </div>
+
+        <div class="w-64 md:w-96 mx-auto bg-purple-200 p-2 rounded-md border border-purple-500">
+            <h1 class="text-sm mb-4 text-purple-700 font-semibold">Cara Pengambilan Gambar</h1>
+            <ol class="list-decimal ms-4 text-sm text-slate-600">
+                <li>Letakan Uang Anda Di Laci Yang Disediakan</li>
+                <li>Arahkan Kamera Ke Laci Tempat Uang, Tekan tombol AMBIL FOTO</li>
+                <li>Upload Gambar</li>
+            </ol>
+        </div>
+
+        <div class="flex justify-center items-center mt-2">
+            <button 
+                class="mx-auto px-3 py-2 text-sm font-medium text-center inline-flex items-center text-white bg-purple-700 rounded-lg hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800" 
+                id="capture"
+            >
+                Ambil Foto
+            </button>
+            <button 
+                class="mx-auto px-3 py-2 text-sm font-medium text-center inline-flex items-center text-white bg-purple-700 rounded-lg hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800" 
+                id="upload"
+            >
+                Upload
             </button>
         </div>
     `;
@@ -195,6 +236,94 @@ openDrawer.addEventListener("click", async (e) => {
 
     boxType = "LACI";
     generateQR();
+});
+
+async function startCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+        });
+        video.srcObject = stream;
+    } catch (error) {
+        console.error("Error accessing the camera: ", error);
+    }
+}
+
+// Convert dataURL to Blob
+function dataURLToBlob(dataURL) {
+    let byteString = atob(dataURL.split(",")[1]);
+    let mimeString = dataURL.split(",")[0].split(":")[1].split(";")[0];
+    let ab = new ArrayBuffer(byteString.length);
+    let ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
+}
+
+takeMoneyPicture.addEventListener("click", async (e) => {
+    e.preventDefault();
+    if (!storeNomorResi || !storeNomorPesanan) {
+        alert("Buat Pesanana Terlebih Dahulu");
+        return;
+    }
+
+    container.textContent = "";
+    container.insertAdjacentHTML("beforeend", renderCameraTemplate());
+
+    setTimeout(async () => {
+        let video = document.getElementById("video");
+        let canvas = document.getElementById("canvas");
+        let capturedImage = document.getElementById("capturedImage");
+        let captureButton = document.getElementById("capture");
+        let uploadButton = document.getElementById("upload");
+
+        await startCamera();
+
+        // Capture the photo
+        captureButton.addEventListener("click", function () {
+            let context = canvas.getContext("2d");
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            let dataUrl = canvas.toDataURL("image/png");
+            capturedImage.src = dataUrl;
+            if (reTakeImage == false) {
+                capturedImage.style.display = "block";
+                video.style.display = "none";
+                captureButton.textContent = "Ambil Ulang";
+                reTakeImage = true;
+            } else {
+                capturedImage.style.display = "none";
+                video.style.display = "block";
+                captureButton.textContent = "Ambil Foto";
+                reTakeImage = false;
+            }
+        });
+
+        uploadButton.addEventListener("click", async () => {
+            let dataUrl = canvas.toDataURL("image/png");
+            let blob = dataURLToBlob(dataUrl);
+            let formData = new FormData();
+            formData.append("file", blob, "photo.png");
+
+            try {
+                let response = await fetch(
+                    `/api/v1/order/owner/take-picture/${storeNomorResi}`,
+                    {
+                        method: "POST",
+                        body: formData,
+                    }
+                );
+
+                if (response.ok) {
+                    alert("Upload successful");
+                } else {
+                    alert("Upload failed");
+                }
+            } catch (error) {
+                alert("Error uploading the file:", error);
+            }
+        });
+    }, 50);
 });
 
 // Handle URL Change When Page First Load

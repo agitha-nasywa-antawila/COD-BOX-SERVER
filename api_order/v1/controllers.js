@@ -1,6 +1,7 @@
 const { resSuccess, resError } = require("../../services/responseHandler");
 const prisma = require("../../prisma/client");
 const { generateString } = require("../../util/string");
+const { fileUploader } = require("../../services/minio");
 
 exports.createOrder = async (req, res) => {
     try {
@@ -130,6 +131,69 @@ exports.userGenerateTokenForOpenBox = async (req, res) => {
             },
         });
     } catch (error) {
+        return resError({ res, errors: error });
+    }
+};
+
+exports.userTakeMoneyPicture = async (req, res) => {
+    try {
+        const filePath = req.file.path;
+        const fileName = req.file.originalname;
+        const presignedUrl = await fileUploader(fileName, filePath);
+        const { nomor_resi } = req.params;
+        const userId = req.userid;
+
+        const order = await prisma.order.findUnique({
+            where: { resi: nomor_resi },
+            select: {
+                id: true,
+                tipe_pembayaran: true,
+                deviceId: true,
+            },
+        });
+
+        if (order == null) throw "Pesanan tidak ditemukan";
+        if (order?.tipe_pembayaran == "ONLINE")
+            throw "Pembayaran menggunakan online payment tidak perlu mengambil foto uang";
+
+        // User Meletakan Uang
+        const putMoney = await prisma.orderKategori.findUnique({
+            where: {
+                name: "PENGGUNA MELETAKAN UANG",
+            },
+        });
+
+        const takeMoneyPicture = await prisma.orderKategori.findUnique({
+            where: {
+                name: "PENGGUNA MENGAMBIL FOTO BUKTI UANG",
+            },
+        });
+
+        await prisma.orderTimeline.createMany({
+            data: [
+                {
+                    orderId: order.id,
+                    orderKategoriId: putMoney.id,
+                    userId: userId,
+                },
+                {
+                    orderId: order.id,
+                    orderKategoriId: takeMoneyPicture.id,
+                    value: presignedUrl,
+                    userId: userId,
+                },
+            ],
+        });
+
+        return resSuccess({
+            res,
+            title: "Success take money picture",
+            data: {
+                url: presignedUrl,
+            },
+        });
+    } catch (error) {
+        console.log(error);
         return resError({ res, errors: error });
     }
 };
