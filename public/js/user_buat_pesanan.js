@@ -224,6 +224,13 @@ openBox.addEventListener("click", async (e) => {
         return;
     }
 
+    // Jika container telah di destroy maka buat ulang
+    const qrContainer = document.getElementById("qr-container");
+    if (!qrContainer) {
+        container.textContent = "";
+        container.insertAdjacentHTML("beforeend", renderQRTemplate());
+    }
+
     boxType = "BOX";
     generateQR();
 });
@@ -233,6 +240,13 @@ openDrawer.addEventListener("click", async (e) => {
     if (!storeNomorResi || !storeNomorPesanan) {
         alert("Buat Pesanana Terlebih Dahulu");
         return;
+    }
+
+    // Jika container telah di destroy maka buat ulang
+    const qrContainer = document.getElementById("qr-container");
+    if (!qrContainer) {
+        container.textContent = "";
+        container.insertAdjacentHTML("beforeend", renderQRTemplate());
     }
 
     boxType = "LACI";
