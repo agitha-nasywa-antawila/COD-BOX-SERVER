@@ -35,7 +35,7 @@ const appLoginRequired = async (req, res, next) => {
             new Date(Number(jwtToken.iat * 1000)) <
             new Date(user.passwordUpdatedAt)
         )
-            throw new res.redirect("/auth/login");
+            return res.redirect("/auth/login");
 
         if (!user) res.redirect("/auth/login");
 
@@ -66,9 +66,10 @@ const appAllowedRole = (...roles) => {
 
         if (!roles.includes(userRole)) {
             if (userRole == "SUPER ADMIN")
-                res.redirect("/admin/transaksi/riwayat");
-            if (userRole == "BASE") res.redirect("/user/transaksi/buat");
-            if (userRole == "KURIR") res.redirect("/kurir/pesanan/antar");
+                return res.redirect("/admin/transaksi/riwayat");
+            if (userRole == "BASE") return res.redirect("/user/transaksi/buat");
+            if (userRole == "KURIR")
+                return res.redirect("/kurir/pesanan/antar");
         }
 
         if (roles.includes(userRole)) return next();
