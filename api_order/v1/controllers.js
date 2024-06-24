@@ -218,7 +218,6 @@ exports.checkDeliveryStatus = async (req, res) => {
 
         const orderTimeline = await prisma.orderTimeline.findMany({
             where: {
-                userId: userId,
                 orderId: order.id,
             },
             select: {
@@ -230,6 +229,7 @@ exports.checkDeliveryStatus = async (req, res) => {
             },
         });
 
+        console.log(orderTimeline);
         const isGoodHasDeliver = orderTimeline.find(
             (d) => d.kategori.name === "KURIR MELETAKAN BARANG"
         );
