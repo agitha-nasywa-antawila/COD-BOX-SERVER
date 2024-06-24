@@ -1,5 +1,6 @@
 const { resSuccess, resError } = require("../../services/responseHandler");
 const prisma = require("../../prisma/client");
+const { generateString } = require("../../util/string");
 
 exports.kurirAmbilPesanan = async (req, res) => {
     try {
@@ -57,5 +58,84 @@ exports.kurirAmbilPesanan = async (req, res) => {
             title: "Kurir gagal mengambil pesanan",
             errors: error,
         });
+    }
+};
+
+// Fungsi untuk membuat url untuk membuka loker
+/*
+    Fungsi ini akan menerima paramter berupa nomor resi, 
+    kemudian akan mengembalikan data beruba sebuah token yang akan digunakan untuk membuka device
+    URL tersebut berisi kode device dan token yang akan aktif selama 1 menit
+*/
+exports.kurirGenerateTokenForOpenBox = async (req, res) => {
+    const { nomor_resi } = req.body;
+    const type =
+        String(req.params?.type).toUpperCase() == "LACI" ? "LACI" : "BOX";
+    const userId = req.userid;
+
+    try {
+        // Pengecekan nomor resi, jika menggunakan online payment maka tidak perlu meletakan uang untuk COD
+        const order = await prisma.order.findUnique({
+            where: { resi: nomor_resi },
+            select: {
+                id: true,
+                tipe_pembayaran: true,
+                deviceId: true,
+            },
+        });
+
+        if (order == null) throw "Pesanan tidak ditemukan";
+        if (order?.tipe_pembayaran == "ONLINE" && type === "LACI")
+            throw "Pembayaran menggunakan online payment tidak perlu membuka laci untuk mengambil uang";
+
+        // Generate Token dan Expired Date
+        const token = generateString(32);
+        let expiredDate = new Date();
+        expiredDate.setTime(expiredDate.getTime() + 60_000);
+
+        // Lakukan update pada device yang digunakan
+        await prisma.device.update({
+            where: {
+                id: order.deviceId,
+            },
+            data: {
+                token: token,
+                tokenExpiredAt: expiredDate,
+            },
+        });
+
+        let typeDescription;
+        if (type === "BOX") {
+            typeDescription = "KURIR MEMBUKA BOX";
+        } else {
+            typeDescription = "KURIR MEMBUKA LACI";
+        }
+
+        const kategori = await prisma.orderKategori.findUnique({
+            where: {
+                name: typeDescription,
+            },
+        });
+
+        if (!kategori) throw new Error("Kategori tidak ditemukan");
+
+        // Kita Buat Data Di Tabel Order Time Line
+        await prisma.orderTimeline.create({
+            data: {
+                orderId: order.id,
+                userId: userId,
+                orderKategoriId: kategori.id,
+            },
+        });
+
+        return resSuccess({
+            res,
+            data: {
+                token: token,
+                type: type,
+            },
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
     }
 };
