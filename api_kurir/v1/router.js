@@ -11,9 +11,15 @@ router.post("/take/order", c.kurirAmbilPesanan);
 router.post("/generate-token/:type", c.kurirGenerateTokenForOpenBox);
 
 router.post(
-    "/kurir/take-picture/:nomor_resi",
+    "/take-money-picture/:nomor_resi",
     upload.single("file"),
-    c.kurirGenerateTokenForOpenBox
+    c.kurirTakeMoneyPicture
+);
+
+router.post(
+    "/take-good-picture/:nomor_resi",
+    upload.single("file"),
+    c.kurirTakeGoodPicture
 );
 
 module.exports = router;

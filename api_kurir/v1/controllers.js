@@ -1,6 +1,7 @@
 const { resSuccess, resError } = require("../../services/responseHandler");
 const prisma = require("../../prisma/client");
 const { generateString } = require("../../util/string");
+const { fileUploader } = require("../../services/minio");
 
 exports.kurirAmbilPesanan = async (req, res) => {
     try {
@@ -133,6 +134,130 @@ exports.kurirGenerateTokenForOpenBox = async (req, res) => {
             data: {
                 token: token,
                 type: type,
+            },
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
+    }
+};
+
+exports.kurirTakeMoneyPicture = async (req, res) => {
+    try {
+        const filePath = req.file.path;
+        const fileName = req.file.originalname;
+        const fileId = await fileUploader(fileName, filePath);
+        const { nomor_resi } = req.params;
+        const userId = req.userid;
+
+        const order = await prisma.order.findUnique({
+            where: { resi: nomor_resi },
+            select: {
+                id: true,
+                tipe_pembayaran: true,
+                deviceId: true,
+            },
+        });
+
+        if (order == null) throw "Pesanan tidak ditemukan";
+        if (order?.tipe_pembayaran == "ONLINE")
+            throw "Pembayaran menggunakan online payment tidak perlu mengambil foto uang";
+
+        // Kurir mengambil bukti uang
+        const takeMoneyPicture = await prisma.orderKategori.findUnique({
+            where: {
+                name: "KURIR MENGAMBIL BUKTI UANG",
+            },
+        });
+
+        // Kurir mengambil uang
+        const takeMoney = await prisma.orderKategori.findUnique({
+            where: {
+                name: "KURIR MENGAMBIL UANG",
+            },
+        });
+
+        await prisma.orderTimeline.createMany({
+            data: [
+                {
+                    orderId: order.id,
+                    orderKategoriId: takeMoneyPicture.id,
+                    value: fileId,
+                    userId: userId,
+                },
+                {
+                    orderId: order.id,
+                    orderKategoriId: takeMoney.id,
+                    userId: userId,
+                },
+            ],
+        });
+
+        return resSuccess({
+            res,
+            title: "Success take money picture",
+            data: {
+                url: fileId,
+            },
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
+    }
+};
+
+exports.kurirTakeGoodPicture = async (req, res) => {
+    try {
+        const filePath = req.file.path;
+        const fileName = req.file.originalname;
+        const { nomor_resi } = req.params;
+        const userId = req.userid;
+
+        const order = await prisma.order.findUnique({
+            where: { resi: nomor_resi },
+            select: {
+                id: true,
+                tipe_pembayaran: true,
+                deviceId: true,
+            },
+        });
+
+        if (order == null) throw "Pesanan tidak ditemukan";
+        const fileId = await fileUploader(fileName, filePath);
+
+        // Kurir ketika meletakan barang
+        const putGoods = await prisma.orderKategori.findUnique({
+            where: {
+                name: "KURIR MELETAKAN BARANG",
+            },
+        });
+
+        // Kurir meletakan barang
+        const takeGoodsPicture = await prisma.orderKategori.findUnique({
+            where: {
+                name: "KURIR MENGAMBIL FOTO BARANG",
+            },
+        });
+
+        await prisma.orderTimeline.createMany({
+            data: [
+                {
+                    orderId: order.id,
+                    orderKategoriId: putGoods.id,
+                    value: fileId,
+                    userId: userId,
+                },
+                {
+                    orderId: order.id,
+                    orderKategoriId: takeGoodsPicture.id,
+                    userId: userId,
+                },
+            ],
+        });
+
+        return resSuccess({
+            res,
+            title: "Success take goods picture",
+            data: {
+                url: fileId,
             },
         });
     } catch (error) {
