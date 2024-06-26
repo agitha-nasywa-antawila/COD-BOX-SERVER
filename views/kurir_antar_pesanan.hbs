@@ -36,100 +36,64 @@
                         </svg>                          
                         Terima <span class="hidden md:inline"> 	&nbsp;  Pesanan</span>
                     </button>
-                    <button type="button" class="relative inline-flex flex-col sm:flex-row items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-purple-700 focus:z-10 focus:ring-2 focus:ring-purple-700 focus:text-purple-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
-                        
+                    <button type="button" id="box-toggle" class="relative inline-flex flex-col sm:flex-row items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-purple-700 focus:z-10 focus:ring-2 focus:ring-purple-700 focus:text-purple-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">     
                         <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M12.013 6.175 7.006 9.369l5.007 3.194-5.007 3.193L2 12.545l5.006-3.193L2 6.175l5.006-3.194 5.007 3.194ZM6.981 17.806l5.006-3.193 5.006 3.193L11.987 21l-5.006-3.194Z"/>
                             <path d="m12.013 12.545 5.006-3.194-5.006-3.176 4.98-3.194L22 6.175l-5.007 3.194L22 12.562l-5.007 3.194-4.98-3.211Z"/>
                         </svg>                                                   
                         Buka Box
                     </button>
-                    <button type="button" class="relative inline-flex flex-col sm:flex-row items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-purple-700 focus:z-10 focus:ring-2 focus:ring-purple-700 focus:text-purple-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+                    <button type="button" id="drawer-toggle" class="relative inline-flex flex-col sm:flex-row items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-purple-700 focus:z-10 focus:ring-2 focus:ring-purple-700 focus:text-purple-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
                         <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 18" fill="currentColor">
                             <path fill-rule="evenodd" d="M5.024 3.783A1 1 0 0 1 6 3h12a1 1 0 0 1 .976.783L20.802 12h-4.244a1.99 1.99 0 0 0-1.824 1.205 2.978 2.978 0 0 1-5.468 0A1.991 1.991 0 0 0 7.442 12H3.198l1.826-8.217ZM3 14v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5h-4.43a4.978 4.978 0 0 1-9.14 0H3Z" clip-rule="evenodd"/>
                         </svg>                          
                         Buka Laci
                     </button>
-                    <button type="button" class="relative inline-flex flex-col sm:flex-row items-center w-full px-4 py-2 text-sm font-medium rounded-b-lg hover:bg-gray-100 hover:text-purple-700 focus:z-10 focus:ring-2 focus:ring-purple-700 focus:text-purple-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+                    <button type="button" id="take-money-picture" class="relative inline-flex flex-col sm:flex-row items-center w-full px-4 py-2 text-sm font-medium rounded-b-lg hover:bg-gray-100 hover:text-purple-700 focus:z-10 focus:ring-2 focus:ring-purple-700 focus:text-purple-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
                         <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.5 4.586A2 2 0 0 1 8.914 4h6.172a2 2 0 0 1 1.414.586L17.914 6H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1.086L7.5 4.586ZM10 12a2 2 0 1 1 4 0 2 2 0 0 1-4 0Zm2-4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" clip-rule="evenodd"/>
                         </svg>                          
                         Foto Uang
                     </button>
+                    <button type="button" id="take-good-picture" class="relative inline-flex flex-col sm:flex-row items-center w-full px-4 py-2 text-sm font-medium rounded-b-lg hover:bg-gray-100 hover:text-purple-700 focus:z-10 focus:ring-2 focus:ring-purple-700 focus:text-purple-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+                        <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.5 4.586A2 2 0 0 1 8.914 4h6.172a2 2 0 0 1 1.414.586L17.914 6H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1.086L7.5 4.586ZM10 12a2 2 0 1 1 4 0 2 2 0 0 1-4 0Zm2-4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" clip-rule="evenodd"/>
+                        </svg>                          
+                        Foto Barang
+                    </button>
                 </div>
             </div>
 
-            <div class="col-span-5 md:col-span-4 border border-gray-200 rounded-lg p-3">
-                
-            <form class="mx-auto grid grid-cols-2 gap-4">
-                <div class="col-span-1">
-                    <label for="nomor_resi" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nomor Resi</label>
-                    <div class="flex">
-                        <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M8 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1h2a2 2 0 0 1 2 2v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2Zm6 1h-4v2H9a1 1 0 0 0 0 2h6a1 1 0 1 0 0-2h-1V4Zm-3 8a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm-2-1a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H9Zm2 5a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm-2-1a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H9Z" clip-rule="evenodd"/>
-                            </svg>  
-                        </span>
-                        <input type="text" id="nomor_resi" class="rounded-none rounded-e-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-purple-500 focus:border-purple-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" placeholder="Masukan Nomor Resi">
+            <div class="col-span-5 md:col-span-4 border border-gray-200 rounded-lg p-3">      
+                <form class="mx-auto grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label for="nomor_resi" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nomor Resi</label>
+                        <div class="flex">
+                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1h2a2 2 0 0 1 2 2v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2Zm6 1h-4v2H9a1 1 0 0 0 0 2h6a1 1 0 1 0 0-2h-1V4Zm-3 8a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm-2-1a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H9Zm2 5a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Zm-2-1a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H9Z" clip-rule="evenodd"/>
+                                </svg>  
+                            </span>
+                            <input type="text" id="nomor_resi" class="rounded-none rounded-e-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-purple-500 focus:border-purple-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" placeholder="Masukan Nomor Resi">
+                        </div>
                     </div>
-                </div>
-                <div class="col-span-1">
-                    <label for="nomor_resi" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nomor Pesanan</label>
-                    <div class="flex">
-                        <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M4 4a1 1 0 0 1 1-1h1.5a1 1 0 0 1 .979.796L7.939 6H19a1 1 0 0 1 .979 1.204l-1.25 6a1 1 0 0 1-.979.796H9.605l.208 1H17a3 3 0 1 1-2.83 2h-2.34a3 3 0 1 1-4.009-1.76L5.686 5H5a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
-                            </svg>                              
-                        </span>
-                        <input type="text" id="nomor_resi" class="rounded-none rounded-e-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-purple-500 focus:border-purple-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" placeholder="Masukan Nomor Pesanan">
-                    </div>
-                </div>
-                <div class="col-span-2">
-                    <label for="biaya" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Harga Barang</label>
-                    <div class="flex">
-                        <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17.345a4.76 4.76 0 0 0 2.558 1.618c2.274.589 4.512-.446 4.999-2.31.487-1.866-1.273-3.9-3.546-4.49-2.273-.59-4.034-2.623-3.547-4.488.486-1.865 2.724-2.899 4.998-2.31.982.236 1.87.793 2.538 1.592m-3.879 12.171V21m0-18v2.2"/>
-                            </svg>  
-                        </span>
-                        <input type="number" id="biaya" class="rounded-none rounded-e-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-purple-500 focus:border-purple-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" placeholder="Masukan Harga Barang yang Dipesan">
-                    </div>
-                </div>
 
-                <div class="col-span-2">
-                    <label for="tipe_pembayaran" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pilih Tipe Pembayaran</label>
-                    <div class="flex">
-                        <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7 6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-2v-4a3 3 0 0 0-3-3H7V6Z" clip-rule="evenodd"/>
-                                <path fill-rule="evenodd" d="M2 11a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-7Zm7.5 1a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z" clip-rule="evenodd"/>
-                                <path d="M10.5 14.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/>
-                            </svg>                              
-                        </span>
-                        <select id="tipe_pembayaran" class="rounded-none rounded-e-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-purple-500 focus:border-purple-500 block flex-1 min-w-0 w-full text-sm p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500">
-                            <option value="cod">Cash On Delivery</option>
-                            <option value="online">Online Payment</option>
-                        </select>
+                    <div class="col-start-2 col-end-3 col-span-1 flex">
+                        <button type="button" class="ms-auto px-3 py-2 text-sm font-medium text-center inline-flex items-center text-white bg-purple-700 rounded-lg hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
+                                <svg class="w-3 h-3 text-white me-2" viewBox="0 0 61 61" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_110_76)">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M34.3828 9.57654C34.3828 8.53966 35.2228 7.70154 36.2578 7.70154C37.2928 7.70154 38.1328 8.53966 38.1328 9.57654V17.0765C38.1328 18.1134 37.2928 18.9515 36.2578 18.9515C35.2228 18.9515 34.3828 18.1134 34.3828 17.0765V9.57654ZM17.5078 22.7015H43.7578C44.7928 22.7015 45.6328 21.8634 45.6328 20.8265V0.201538H15.6328V20.8265C15.6328 21.8634 16.4728 22.7015 17.5078 22.7015ZM53.1328 0.201538H49.3828V22.7015C49.3828 24.7715 47.7028 26.4515 45.6328 26.4515H15.6328C13.5628 26.4515 11.8828 24.7715 11.8828 22.7015V0.201538H8.13281C3.99094 0.201538 0.632812 3.55966 0.632812 7.70154V52.7015C0.632812 56.8434 3.99094 60.2015 8.13281 60.2015H53.1328C57.2747 60.2015 60.6328 56.8434 60.6328 52.7015V7.70154C60.6328 3.55966 57.2747 0.201538 53.1328 0.201538Z" fill="currentColor"/>
+                                    </g>
+                                    <defs>
+                                    <clipPath id="clip0_110_76">
+                                    <rect width="60" height="60" fill="white" transform="translate(0.632812 0.201538)"/>
+                                    </clipPath>
+                                    </defs>
+                                </svg>      
+                            Ambil Pesanan
+                        </button>
                     </div>
-                </div>
-
-                <div class="col-start-2 col-end-3 col-span-1 flex">
-                    <button type="button" class="ms-auto px-3 py-2 text-sm font-medium text-center inline-flex items-center text-white bg-purple-700 rounded-lg hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
-                            <svg class="w-3 h-3 text-white me-2" viewBox="0 0 61 61" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clip0_110_76)">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M34.3828 9.57654C34.3828 8.53966 35.2228 7.70154 36.2578 7.70154C37.2928 7.70154 38.1328 8.53966 38.1328 9.57654V17.0765C38.1328 18.1134 37.2928 18.9515 36.2578 18.9515C35.2228 18.9515 34.3828 18.1134 34.3828 17.0765V9.57654ZM17.5078 22.7015H43.7578C44.7928 22.7015 45.6328 21.8634 45.6328 20.8265V0.201538H15.6328V20.8265C15.6328 21.8634 16.4728 22.7015 17.5078 22.7015ZM53.1328 0.201538H49.3828V22.7015C49.3828 24.7715 47.7028 26.4515 45.6328 26.4515H15.6328C13.5628 26.4515 11.8828 24.7715 11.8828 22.7015V0.201538H8.13281C3.99094 0.201538 0.632812 3.55966 0.632812 7.70154V52.7015C0.632812 56.8434 3.99094 60.2015 8.13281 60.2015H53.1328C57.2747 60.2015 60.6328 56.8434 60.6328 52.7015V7.70154C60.6328 3.55966 57.2747 0.201538 53.1328 0.201538Z" fill="currentColor"/>
-                                </g>
-                                <defs>
-                                <clipPath id="clip0_110_76">
-                                <rect width="60" height="60" fill="white" transform="translate(0.632812 0.201538)"/>
-                                </clipPath>
-                                </defs>
-                            </svg>
-                                
-                        Simpan
-                    </button>
-                </div>
-            </form>
+                </form>
   
             </div>
         </div>
