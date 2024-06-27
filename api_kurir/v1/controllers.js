@@ -264,3 +264,83 @@ exports.kurirTakeGoodPicture = async (req, res) => {
         return resError({ res, errors: error });
     }
 };
+
+exports.kurirOrderList = async (req, res) => {
+    try {
+        const item = Number(req.query?.item) ? Number(req.query.item) : 100;
+        const search = req.query?.search ? req.query.search : "";
+        const cursor = req.query?.cursor ? req.query.cursor : "";
+        let searchQuery = {};
+        let cursorQuery;
+        let skipRecord = 0;
+
+        if (cursor) {
+            skipRecord = 1;
+            cursorQuery = {
+                cursor: {
+                    id: cursor,
+                },
+            };
+        }
+
+        if (search) {
+            searchQuery = { contains: search, mode: "insensitive" };
+        }
+
+        const userId = req.userid;
+        const data = [];
+        const rawData = await prisma.order.findMany({
+            ...cursorQuery,
+            skip: skipRecord,
+            take: item,
+            select: {
+                id: true,
+                resi: true,
+                tipe_pembayaran: true,
+                isOrderComplate: true,
+                OrderTimeline: {
+                    take: 1,
+                    orderBy: {
+                        createdAt: "desc",
+                    },
+                    select: {
+                        createdAt: true,
+                        kategori: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                },
+            },
+            where: {
+                kurirId: userId,
+                resi: searchQuery,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        for (let i = 0; i < rawData.length; i++) {
+            const orderData = rawData[i];
+            data.push({
+                order_id: orderData.id,
+                order_resi: orderData.resi,
+                isOrderComplate: orderData?.isOrderComplate,
+                tipe_pembayaran: orderData.tipe_pembayaran,
+                status_terakhir_deskripsi:
+                    orderData?.OrderTimeline[0]?.kategori.name || "-",
+                status_terakhir_waktu:
+                    orderData?.OrderTimeline[0]?.createdAt || "",
+            });
+        }
+        return resSuccess({
+            res,
+            title: "Success get order data",
+            data: data,
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
+    }
+};

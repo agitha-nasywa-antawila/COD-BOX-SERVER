@@ -22,4 +22,6 @@ router.post(
     c.kurirTakeGoodPicture
 );
 
+router.get("/order/daftar", c.kurirOrderList);
+
 module.exports = router;
