@@ -16,5 +16,10 @@ router.post(
 );
 router.get("/owner/check-delivery/:nomor_resi", c.checkDeliveryStatus);
 router.get("/owner/order", c.userOrderList);
+router.post(
+    "/owner/take-good-picture/:nomor_resi",
+    upload.single("file"),
+    c.userTakeGoodPicture
+);
 
 module.exports = router;

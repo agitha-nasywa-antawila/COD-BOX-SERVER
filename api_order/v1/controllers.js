@@ -324,3 +324,84 @@ exports.userOrderList = async (req, res) => {
         return resError({ res, errors: error });
     }
 };
+
+exports.userTakeGoodPicture = async (req, res) => {
+    try {
+        const filePath = req.file.path;
+        const fileName = req.file.originalname;
+        const presignedUrl = await fileUploader(fileName, filePath);
+        const { nomor_resi } = req.params;
+        const userId = req.userid;
+
+        const order = await prisma.order.findUnique({
+            where: { resi: nomor_resi },
+            select: {
+                id: true,
+                tipe_pembayaran: true,
+                deviceId: true,
+            },
+        });
+
+        if (order == null) throw "Pesanan tidak ditemukan";
+        if (order?.tipe_pembayaran == "ONLINE")
+            throw "Pembayaran menggunakan online payment tidak perlu mengambil foto uang";
+
+        // User Mengambil foto Barang
+        const takeGoodPicture = await prisma.orderKategori.findUnique({
+            where: {
+                name: "PENGGUNA MENGAMBIL FOTO BARANG",
+            },
+        });
+
+        const takeGood = await prisma.orderKategori.findUnique({
+            where: {
+                name: "PENGGUNA MENGAMBIL BARANG",
+            },
+        });
+
+        const finishTransaction = await prisma.orderKategori.findUnique({
+            where: {
+                name: "TRANSAKSI SELESAI",
+            },
+        });
+
+        await prisma.orderTimeline.createMany({
+            data: [
+                {
+                    orderId: order.id,
+                    orderKategoriId: takeGoodPicture.id,
+                    userId: userId,
+                    value: presignedUrl,
+                },
+                {
+                    orderId: order.id,
+                    orderKategoriId: takeGood.id,
+                    userId: userId,
+                },
+                {
+                    orderId: order.id,
+                    orderKategoriId: finishTransaction.id,
+                    userId: userId,
+                },
+            ],
+        });
+
+        await prisma.order.update({
+            where: { id: order.id },
+            data: {
+                isOrderComplate: true,
+            },
+        });
+
+        return resSuccess({
+            res,
+            title: "Success finish order",
+            data: {
+                orderId: order.id,
+                photoUrl: presignedUrl,
+            },
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
+    }
+};

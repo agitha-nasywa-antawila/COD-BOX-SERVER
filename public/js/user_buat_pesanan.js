@@ -361,6 +361,86 @@ takeGoodPicture.addEventListener("click", async (e) => {
     }
 });
 
+takeGoodPicture.addEventListener("click", async (e) => {
+    e.preventDefault();
+    if (!storeNomorResi) {
+        alert("Buat Pesanana Terlebih Dahulu");
+        return;
+    }
+
+    const resp = await httpRequest({
+        url: `/api/v1/order/owner/check-delivery/${storeNomorResi}`,
+        method: "GET",
+    });
+
+    if (resp.success) {
+        if (!resp.data.isGoodHasDeliver) {
+            alert(
+                "Menu Belum Bisa Diakses Karena Pesanan Anda Belum Di Antar Kurir"
+            );
+            return;
+        }
+    }
+
+    container.textContent = "";
+    container.insertAdjacentHTML("beforeend", renderCameraTemplate());
+
+    setTimeout(async () => {
+        let video = document.getElementById("video");
+        let canvas = document.getElementById("canvas");
+        let capturedImage = document.getElementById("capturedImage");
+        let captureButton = document.getElementById("capture");
+        let uploadButton = document.getElementById("upload");
+
+        await startCamera();
+
+        // Capture the photo
+        captureButton.addEventListener("click", function () {
+            let context = canvas.getContext("2d");
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            let dataUrl = canvas.toDataURL("image/png");
+            capturedImage.src = dataUrl;
+            if (reTakeImage == false) {
+                capturedImage.style.display = "block";
+                video.style.display = "none";
+                captureButton.textContent = "Ambil Ulang";
+                reTakeImage = true;
+            } else {
+                capturedImage.style.display = "none";
+                video.style.display = "block";
+                captureButton.textContent = "Ambil Foto";
+                reTakeImage = false;
+            }
+        });
+
+        uploadButton.addEventListener("click", async () => {
+            let dataUrl = canvas.toDataURL("image/png");
+            let blob = dataURLToBlob(dataUrl);
+            let formData = new FormData();
+            formData.append("file", blob, "photo.png");
+
+            try {
+                let response = await fetch(
+                    `/api/v1/order/owner/take-good-picture/${storeNomorResi}`,
+                    {
+                        method: "POST",
+                        body: formData,
+                    }
+                );
+
+                if (response.ok) {
+                    alert("Upload successful, order finish");
+                    window.location = "/user/transaksi/daftar";
+                } else {
+                    alert("Upload failed");
+                }
+            } catch (error) {
+                alert("Error uploading the file:", error);
+            }
+        });
+    }, 50);
+});
+
 // Handle URL Change When Page First Load
 const currentUrl = window.location.href;
 const url = new URL(currentUrl);
