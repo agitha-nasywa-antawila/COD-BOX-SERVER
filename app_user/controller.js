@@ -34,3 +34,13 @@ exports.userDetailPesanan = (req, res) => {
     };
     res.render("user_detail_pesanan", data);
 };
+
+exports.userTimeLinePesanan = (req, res) => {
+    const data = {
+        layout: "layouts/user_base",
+        styles: [],
+        scripts: ["time_line_pesanan.js"],
+        role: "User",
+    };
+    res.render("time_line_pesanan", data);
+};

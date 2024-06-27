@@ -365,25 +365,29 @@ exports.userTakeGoodPicture = async (req, res) => {
             },
         });
 
-        await prisma.orderTimeline.createMany({
-            data: [
-                {
-                    orderId: order.id,
-                    orderKategoriId: takeGoodPicture.id,
-                    userId: userId,
-                    value: presignedUrl,
-                },
-                {
-                    orderId: order.id,
-                    orderKategoriId: takeGood.id,
-                    userId: userId,
-                },
-                {
-                    orderId: order.id,
-                    orderKategoriId: finishTransaction.id,
-                    userId: userId,
-                },
-            ],
+        await prisma.orderTimeline.create({
+            data: {
+                orderId: order.id,
+                orderKategoriId: takeGood.id,
+                userId: userId,
+            },
+        });
+
+        await prisma.orderTimeline.create({
+            data: {
+                orderId: order.id,
+                orderKategoriId: takeGoodPicture.id,
+                userId: userId,
+                value: presignedUrl,
+            },
+        });
+
+        await prisma.orderTimeline.create({
+            data: {
+                orderId: order.id,
+                orderKategoriId: finishTransaction.id,
+                userId: userId,
+            },
         });
 
         await prisma.order.update({
@@ -399,6 +403,75 @@ exports.userTakeGoodPicture = async (req, res) => {
             data: {
                 orderId: order.id,
                 photoUrl: presignedUrl,
+            },
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
+    }
+};
+
+exports.orderTimeLine = async (req, res) => {
+    try {
+        const nomorResi = req.params.nomorResi;
+        const userId = req.userid;
+
+        const order = await prisma.order.findUnique({
+            where: { resi: nomorResi },
+            select: {
+                id: true,
+                resi: true,
+                Owner: {
+                    select: {
+                        username: true,
+                    },
+                },
+                Kurir: {
+                    select: {
+                        username: true,
+                    },
+                },
+                createdAt: true,
+            },
+        });
+
+        if (order == null) throw "Pesanan tidak ditemukan";
+
+        const rawData = await prisma.orderTimeline.findMany({
+            where: {
+                orderId: order.id,
+            },
+            select: {
+                id: true,
+                kategori: {
+                    select: {
+                        name: true,
+                    },
+                },
+                user: {
+                    select: {
+                        username: true,
+                    },
+                },
+                value: true,
+                createdAt: true,
+            },
+            orderBy: {
+                createdAt: "asc",
+            },
+        });
+
+        return resSuccess({
+            res,
+            title: "Success get order timeline",
+            data: {
+                header: {
+                    resi: order.resi,
+                    owner: order.Owner.username,
+                    kurir: order.Kurir.username,
+                    createdAt: order.createdAt,
+                    finishAt: rawData.at(-1).createdAt,
+                },
+                timeline: rawData,
             },
         });
     } catch (error) {
