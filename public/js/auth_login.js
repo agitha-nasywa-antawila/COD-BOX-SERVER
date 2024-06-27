@@ -23,6 +23,4 @@ loginButton.addEventListener("click", async (e) => {
         // Munculin Error
         alert(`${response.message}, password not match or user not register`);
     }
-
-    console.log(response);
 });

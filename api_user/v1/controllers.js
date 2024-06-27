@@ -57,7 +57,6 @@ exports.register = async (req, res) => {
             data: newUser,
         });
     } catch (err) {
-        console.log(err);
         return resError({ res, title: "Failed register user", errors: err });
     }
 };
@@ -275,7 +274,6 @@ exports.resetPassword = async (req, res) => {
             data: newPass,
         });
     } catch (error) {
-        console.log(error);
         return resError({ res, errors: error });
     }
 };
@@ -343,7 +341,6 @@ exports.verifyingEmail = async (req, res) => {
         });
         // return res.redirect("/profile");
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             errors: error,
@@ -563,7 +560,6 @@ exports.profileUpdate = async (req, res) => {
             data: newData,
         });
     } catch (err) {
-        console.log(err);
         return resError({ res, errors: err, title: "Failed update profile" });
     }
 };

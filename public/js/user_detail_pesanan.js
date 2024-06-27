@@ -1,15 +1,67 @@
-const nomorResiForm = document.getElementById("nomor_resi");
-const saveButton = document.getElementById("simpan");
 const container = document.getElementById("container");
 const openBox = document.getElementById("box-toggle");
 const openDrawer = document.getElementById("drawer-toggle");
 const takeMoneyPicture = document.getElementById("take-money-picture");
 const takeGoodPicture = document.getElementById("take-good-picture");
+const deviceList = [];
 
-let storeNomorResi;
+let storeNomorResi, storeNomorPesanan, storeCodBoxId;
 let boxType = "BOX"; // Value can be BOX or LACI
-let reTakeMoneyImage,
-    reTakeGoodImage = false;
+let reTakeImage = false;
+
+function updateQueryParam(key, value) {
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+
+    // Set or update the query parameter
+    params.set(key, value);
+
+    // Update the URL
+    url.search = params.toString();
+
+    // Update the browser's URL bar without reloading the page
+    history.pushState({}, "Dashboard", url.toString());
+}
+
+function setDefaultOption(value) {
+    const selectElement = document.getElementById("tipe_pembayaran");
+    const options = selectElement.options;
+    for (let i = 0; i < options.length; i++) {
+        if (options[i].value === value) {
+            options[i].selected = true;
+            break;
+        }
+    }
+}
+
+function updateSubMenu(paymentType) {
+    const forCod = document.querySelectorAll(".for-cod");
+
+    for (let i = 0; i < forCod.length; i++) {
+        const element = forCod[i];
+        if (paymentType === "COD") {
+            element.classList.add("inline-flex");
+            element.classList.remove("hidden");
+        }
+
+        if (paymentType === "ONLINE") {
+            element.classList.remove("inline-flex");
+            element.classList.add("hidden");
+        }
+    }
+}
+
+function handleCod() {
+    let updateUrl;
+    const tipePembayaran = document
+        .getElementById("tipe_pembayaran")
+        .value.trim();
+
+    updateUrl = `/user/transaksi/buat?payment=${tipePembayaran}`;
+    window.history.pushState({}, "Dashboard", updateUrl);
+
+    updateSubMenu(tipePembayaran);
+}
 
 function renderQRTemplate() {
     return `
@@ -95,7 +147,7 @@ async function generateQR() {
     }
 
     const qrResponse = await httpRequest({
-        url: `/api/v1/kurir/generate-token/${boxType}`,
+        url: `/api/v1/order/owner/generate-token/${boxType}`,
         method: "POST",
         body: {
             nomor_resi: storeNomorResi,
@@ -115,34 +167,15 @@ async function generateQR() {
     }
 }
 
-saveButton.addEventListener("click", async (e) => {
-    e.preventDefault();
+// Handle URL Change When Page First Load
+const currentUrl = window.location.href;
+const url = new URL(currentUrl);
+const params = new URLSearchParams(url.search);
+const urlTipePembayaran = params.get("payment");
+const urlResi = params.get("resi");
+storeNomorResi = urlResi;
 
-    const nomorResiValue = String(nomorResiForm.value).trim();
-
-    const response = await httpRequest({
-        url: "/api/v1/kurir/take/order",
-        method: "POST",
-        body: {
-            nomor_resi: nomorResiValue,
-        },
-    });
-
-    if (response.success) {
-        storeNomorResi = nomorResiValue;
-        container.textContent = "";
-        container.insertAdjacentHTML("beforeend", renderQRTemplate());
-
-        setTimeout(async () => {
-            // Send REQUEST TO SERVER
-            generateQR();
-        }, 50);
-    }
-
-    if (!response.success) {
-        alert(response?.errors || "Gagal mengambil pesanan");
-    }
-});
+generateQR();
 
 openBox.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -151,6 +184,7 @@ openBox.addEventListener("click", async (e) => {
         return;
     }
 
+    // Jika container telah di destroy maka buat ulang
     const qrContainer = document.getElementById("qr-container");
     if (!qrContainer) {
         container.textContent = "";
@@ -227,16 +261,16 @@ takeMoneyPicture.addEventListener("click", async (e) => {
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             let dataUrl = canvas.toDataURL("image/png");
             capturedImage.src = dataUrl;
-            if (reTakeMoneyImage == false) {
+            if (reTakeImage == false) {
                 capturedImage.style.display = "block";
                 video.style.display = "none";
                 captureButton.textContent = "Ambil Ulang";
-                reTakeMoneyImage = true;
+                reTakeImage = true;
             } else {
                 capturedImage.style.display = "none";
                 video.style.display = "block";
                 captureButton.textContent = "Ambil Foto";
-                reTakeMoneyImage = false;
+                reTakeImage = false;
             }
         });
 
@@ -248,7 +282,7 @@ takeMoneyPicture.addEventListener("click", async (e) => {
 
             try {
                 let response = await fetch(
-                    `/api/v1/kurir/take-money-picture/${storeNomorResi}`,
+                    `/api/v1/order/owner/take-picture/${storeNomorResi}`,
                     {
                         method: "POST",
                         body: formData,
@@ -274,60 +308,15 @@ takeGoodPicture.addEventListener("click", async (e) => {
         return;
     }
 
-    container.textContent = "";
-    container.insertAdjacentHTML("beforeend", renderCameraTemplate());
+    const resp = await httpRequest({
+        url: `/api/v1/order/owner/check-delivery/${storeNomorResi}`,
+        method: "GET",
+    });
 
-    setTimeout(async () => {
-        let video = document.getElementById("video");
-        let canvas = document.getElementById("canvas");
-        let capturedImage = document.getElementById("capturedImage");
-        let captureButton = document.getElementById("capture");
-        let uploadButton = document.getElementById("upload");
-
-        await startCamera();
-
-        // Capture the photo
-        captureButton.addEventListener("click", function () {
-            let context = canvas.getContext("2d");
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            let dataUrl = canvas.toDataURL("image/png");
-            capturedImage.src = dataUrl;
-            if (reTakeGoodImage == false) {
-                capturedImage.style.display = "block";
-                video.style.display = "none";
-                captureButton.textContent = "Ambil Ulang";
-                reTakeGoodImage = true;
-            } else {
-                capturedImage.style.display = "none";
-                video.style.display = "block";
-                captureButton.textContent = "Ambil Foto";
-                reTakeGoodImage = false;
-            }
-        });
-
-        uploadButton.addEventListener("click", async () => {
-            let dataUrl = canvas.toDataURL("image/png");
-            let blob = dataURLToBlob(dataUrl);
-            let formData = new FormData();
-            formData.append("file", blob, "photo.png");
-
-            try {
-                let response = await fetch(
-                    `/api/v1/kurir/take-good-picture/${storeNomorResi}`,
-                    {
-                        method: "POST",
-                        body: formData,
-                    }
-                );
-
-                if (response.ok) {
-                    alert("Upload successful");
-                } else {
-                    alert("Upload failed");
-                }
-            } catch (error) {
-                alert("Error uploading the file:", error);
-            }
-        });
-    }, 50);
+    if (resp.success) {
+        if (!resp.data.isGoodHasDeliver)
+            alert(
+                "Menu Belum Bisa Diakses Karena Pesanan Anda Belum Di Antar Kurir"
+            );
+    }
 });

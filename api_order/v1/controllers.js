@@ -80,8 +80,8 @@ exports.userGenerateTokenForOpenBox = async (req, res) => {
         });
 
         if (order == null) throw "Pesanan tidak ditemukan";
-        if (order?.tipe_pembayaran == "ONLINE")
-            throw "Pembayaran menggunakan online payment tidak perlu membuka box untuk memasukan uang";
+        if (order?.tipe_pembayaran == "ONLINE" && type == "LACI")
+            throw "Pembayaran menggunakan online payment tidak perlu membuka laci untuk memasukan uang";
 
         // Generate Token dan Expired Date
         const token = generateString(32);
@@ -229,7 +229,6 @@ exports.checkDeliveryStatus = async (req, res) => {
             },
         });
 
-        console.log(orderTimeline);
         const isGoodHasDeliver = orderTimeline.find(
             (d) => d.kategori.name === "KURIR MELETAKAN BARANG"
         );

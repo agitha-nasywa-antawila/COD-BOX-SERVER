@@ -1,6 +1,4 @@
 exports.adminRiwayatPesananPengguna = (req, res) => {
-    console.log(req.username);
-
     const data = {
         layout: "layouts/admin_base",
     };

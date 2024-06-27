@@ -41,7 +41,6 @@ async function fileUploader(fileName, filePath) {
 
         return objectName;
     } catch (error) {
-        console.log(error);
         return error;
     }
 }
