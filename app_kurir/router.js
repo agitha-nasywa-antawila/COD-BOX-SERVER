@@ -5,5 +5,6 @@ const controller = require("./controller");
 
 router.use(appLoginRequired, allowedRole("KURIR"));
 router.get("/pesanan/antar", controller.kurirAntarPesanan);
+router.get("/pesanan/list", controller.kurirDaftarPesanan);
 
 module.exports = router;
