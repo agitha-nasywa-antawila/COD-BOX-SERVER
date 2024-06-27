@@ -15,5 +15,6 @@ router.post(
     c.userTakeMoneyPicture
 );
 router.get("/owner/check-delivery/:nomor_resi", c.checkDeliveryStatus);
+router.get("/owner/order", c.userOrderList);
 
 module.exports = router;

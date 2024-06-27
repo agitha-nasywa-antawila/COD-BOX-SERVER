@@ -11,3 +11,12 @@ exports.userBuatPesanan = (req, res) => {
     };
     res.render("user_buat_pesanan", data);
 };
+
+exports.userDaftarPesanan = (req, res) => {
+    const data = {
+        layout: "layouts/user_base",
+        styles: [],
+        scripts: ["user_daftar_pesanan.js"],
+    };
+    res.render("user_daftar_pesanan", data);
+};
