@@ -37,6 +37,11 @@ app.get("/public/img/:fileName", async (req, res) => {
                     .send("Error generating presigned URL: " + err.message);
             }
 
+            console.log(presignedUrl);
+            const forceHttp = presignedUrl.replace(/^https:\/\//, "http://");
+
+            res.redirect(forceHttp);
+
             res.redirect(presignedUrl);
         }
     );
