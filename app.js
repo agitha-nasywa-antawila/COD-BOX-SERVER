@@ -40,9 +40,7 @@ app.get("/public/img/:fileName", async (req, res) => {
             console.log(presignedUrl);
             const forceHttp = presignedUrl.replace(/^https:\/\//, "http://");
 
-            res.redirect(forceHttp);
-
-            res.redirect(presignedUrl);
+            return res.redirect(forceHttp);
         }
     );
 });
