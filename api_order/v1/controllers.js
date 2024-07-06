@@ -325,6 +325,30 @@ exports.userOrderList = async (req, res) => {
     }
 };
 
+exports.userOrderDetail = async (req, res) => {
+    try {
+        const { nomorResi } = req.params;
+        const data = await prisma.order.findUnique({
+            where: {
+                resi: nomorResi,
+            },
+            select: {
+                resi: true,
+                nomor_pesanan: true,
+                tipe_pembayaran: true,
+                createdAt: true,
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success get order data",
+            data: data,
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
+    }
+};
+
 exports.userTakeGoodPicture = async (req, res) => {
     try {
         const filePath = req.file.path;
@@ -343,8 +367,6 @@ exports.userTakeGoodPicture = async (req, res) => {
         });
 
         if (order == null) throw "Pesanan tidak ditemukan";
-        if (order?.tipe_pembayaran == "ONLINE")
-            throw "Pembayaran menggunakan online payment tidak perlu mengambil foto uang";
 
         // User Mengambil foto Barang
         const takeGoodPicture = await prisma.orderKategori.findUnique({

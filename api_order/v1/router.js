@@ -25,6 +25,11 @@ router.get(
     c.checkDeliveryStatus
 );
 router.get("/owner/order", allowedRole("BASE"), c.userOrderList);
+router.get(
+    "/owner/order/:nomorResi",
+    allowedRole("BASE", "KURIR"),
+    c.userOrderDetail
+);
 router.post(
     "/owner/take-good-picture/:nomor_resi",
     allowedRole("BASE"),

@@ -5,7 +5,7 @@ const takeMoneyPicture = document.getElementById("take-money-picture");
 const takeGoodPicture = document.getElementById("take-good-picture");
 const deviceList = [];
 
-let storeNomorResi, storeNomorPesanan, storeCodBoxId;
+let storeNomorResi, storeNomorPesanan, storeCodBoxId, storeTipePembayaran;
 let boxType = "BOX"; // Value can be BOX or LACI
 let reTakeImage = false;
 
@@ -155,7 +155,7 @@ async function generateQR() {
     });
 
     if (!qrResponse.success) {
-        alert(`Gagal Membuat QR`);
+        alert(qrResponse.errors || `Gagal Membuat QR`);
     }
 
     if (qrResponse.success) {
@@ -175,6 +175,19 @@ const urlTipePembayaran = params.get("payment");
 const urlResi = params.get("resi");
 storeNomorResi = urlResi;
 
+generalDataLoader({
+    url: `/api/v1/order/owner/order/${urlResi}`,
+    func: async (data) => {
+        storeTipePembayaran = data.tipe_pembayaran;
+        if (storeTipePembayaran === "ONLINE") {
+            // Hilangkan bagian ambil foto uang dan buka laci, karena pembelian dengan online payment tidak perlu melakukan hal itu
+            document.getElementById("drawer-toggle").classList.add("hidden");
+            document
+                .getElementById("take-money-picture")
+                .classList.add("hidden");
+        }
+    },
+});
 generateQR();
 
 openBox.addEventListener("click", async (e) => {

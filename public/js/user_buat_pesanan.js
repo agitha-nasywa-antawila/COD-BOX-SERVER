@@ -161,7 +161,7 @@ async function generateQR() {
     });
 
     if (!qrResponse.success) {
-        alert(`Gagal Membuat QR`);
+        alert(qrResponse.errors || `Gagal Membuat QR`);
     }
 
     if (qrResponse.success) {
@@ -198,18 +198,20 @@ saveButton.addEventListener("click", async (e) => {
         if (tipePembayaranValue == "ONLINE") {
             alert("Sukses menambahkan pesanan");
         }
+        storeNomorPesanan = nomorPesananValue;
+        storeNomorResi = nomorResiValue;
 
-        if (tipePembayaranValue == "COD") {
-            storeNomorPesanan = nomorPesananValue;
-            storeNomorResi = nomorResiValue;
-            container.textContent = "";
-            container.insertAdjacentHTML("beforeend", renderQRTemplate());
-
-            setTimeout(async () => {
-                // Send REQUEST TO SERVER
-                generateQR();
-            }, 50);
+        if (tipePembayaranValue == "ONLINE") {
+            openBox.classList.add("inline-flex");
+            takeGoodPicture.classList.add("inline-flex");
         }
+
+        container.textContent = "";
+        container.insertAdjacentHTML("beforeend", renderQRTemplate());
+        setTimeout(async () => {
+            // Send REQUEST TO SERVER
+            generateQR();
+        }, 50);
     }
 
     if (!response.success) {

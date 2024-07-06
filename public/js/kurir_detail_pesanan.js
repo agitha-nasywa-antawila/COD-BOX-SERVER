@@ -174,7 +174,19 @@ const params = new URLSearchParams(url.search);
 const urlTipePembayaran = params.get("payment");
 const urlResi = params.get("resi");
 storeNomorResi = urlResi;
-
+generalDataLoader({
+    url: `/api/v1/order/owner/order/${urlResi}`,
+    func: async (data) => {
+        storeTipePembayaran = data.tipe_pembayaran;
+        if (storeTipePembayaran === "ONLINE") {
+            // Hilangkan bagian ambil foto uang dan buka laci, karena pembelian dengan online payment tidak perlu melakukan hal itu
+            document.getElementById("drawer-toggle").classList.add("hidden");
+            document
+                .getElementById("take-money-picture")
+                .classList.add("hidden");
+        }
+    },
+});
 generateQR();
 
 openBox.addEventListener("click", async (e) => {

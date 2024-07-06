@@ -11,6 +11,20 @@ let boxType = "BOX"; // Value can be BOX or LACI
 let reTakeMoneyImage,
     reTakeGoodImage = false;
 
+function updateQueryParam(key, value) {
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+
+    // Set or update the query parameter
+    params.set(key, value);
+
+    // Update the URL
+    url.search = params.toString();
+
+    // Update the browser's URL bar without reloading the page
+    history.pushState({}, "Dashboard", url.toString());
+}
+
 function renderQRTemplate() {
     return `
         <h1 class="text-xl mb-4 text-center text-purple-700 font-semibold">QR CODE</h1>
@@ -130,8 +144,15 @@ saveButton.addEventListener("click", async (e) => {
 
     if (response.success) {
         storeNomorResi = nomorResiValue;
+        updateQueryParam("resi", storeNomorResi);
         container.textContent = "";
         container.insertAdjacentHTML("beforeend", renderQRTemplate());
+        document.getElementById("terima-pesanan").classList.add("hidden");
+
+        if (response.data.tipe_pembayaran === "ONLINE") {
+            openDrawer.classList.add("hidden");
+            takeMoneyPicture.classList.add("hidden");
+        }
 
         setTimeout(async () => {
             // Send REQUEST TO SERVER
@@ -321,7 +342,8 @@ takeGoodPicture.addEventListener("click", async (e) => {
                 );
 
                 if (response.ok) {
-                    alert("Upload successful");
+                    alert("Upload successful, order complate");
+                    window.location = "/kurir/pesanan/list";
                 } else {
                     alert("Upload failed");
                 }
