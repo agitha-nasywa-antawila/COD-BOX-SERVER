@@ -195,15 +195,15 @@ saveButton.addEventListener("click", async (e) => {
 
     if (response.success) {
         updateQueryParam("resi", response.data.resi);
-        if (tipePembayaranValue == "ONLINE") {
-            alert("Sukses menambahkan pesanan");
-        }
         storeNomorPesanan = nomorPesananValue;
         storeNomorResi = nomorResiValue;
 
         if (tipePembayaranValue == "ONLINE") {
+            alert("Sukses menambahkan pesanan");
             openBox.classList.add("inline-flex");
+            openBox.classList.remove("hidden");
             takeGoodPicture.classList.add("inline-flex");
+            takeGoodPicture.classList.remove("hidden");
         }
 
         container.textContent = "";
