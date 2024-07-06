@@ -12,11 +12,27 @@ exports.createOrder = async (req, res) => {
             tipe_pembayaran,
             cod_box_id,
         } = req.body;
-        console.log("work");
+
         const userId = req.userid;
 
+        // validasi apakah terdapat cod box
+        const device = await prisma.device.findUnique({
+            select: {
+                id: true,
+                isDeviceInUse: true,
+            },
+            where: {
+                id: cod_box_id,
+            },
+        });
+
+        if (!device.id)
+            throw "Cod Box yang ingin anda gunakan tidak ada, coba gunakan box lain";
+        if (device.isDeviceInUse)
+            throw "Cod Box yang ingin anda gunakan sedang digunakan, coba gunakan box lain";
+
         // cek pesanan apakah sudah ada
-        const { id: isOrderIdExist } = await prisma.order.findMany({
+        const isOrderIdExist = await prisma.order.findMany({
             select: {
                 id: true,
             },
@@ -25,7 +41,7 @@ exports.createOrder = async (req, res) => {
             },
         });
 
-        if (!isOrderIdExist)
+        if (isOrderIdExist.length > 0)
             throw "Nomor resi atau pesanan sudah terdaftar sebelumnya";
 
         // Masukan Data Ke Tabel Order
@@ -58,6 +74,12 @@ exports.createOrder = async (req, res) => {
                 userId: userId,
                 orderKategoriId: kategori.id,
             },
+        });
+
+        // Update device sedang di gunakan
+        await prisma.device.update({
+            where: { id: cod_box_id },
+            data: { isDeviceInUse: true },
         });
 
         return resSuccess({
@@ -431,6 +453,11 @@ exports.userTakeGoodPicture = async (req, res) => {
             data: {
                 isOrderComplate: true,
             },
+        });
+
+        await prisma.device.update({
+            where: { id: order.deviceId },
+            data: { isDeviceInUse: false },
         });
 
         return resSuccess({

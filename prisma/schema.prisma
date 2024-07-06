@@ -55,6 +55,7 @@ model Device {
   kode           String    @unique
   token          String?
   tokenExpiredAt DateTime?
+  isDeviceInUse  Boolean?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   order          Order[]
