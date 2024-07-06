@@ -12,7 +12,21 @@ exports.createOrder = async (req, res) => {
             tipe_pembayaran,
             cod_box_id,
         } = req.body;
+        console.log("work");
         const userId = req.userid;
+
+        // cek pesanan apakah sudah ada
+        const { id: isOrderIdExist } = await prisma.order.findMany({
+            select: {
+                id: true,
+            },
+            where: {
+                OR: [{ nomor_pesanan: nomor_pesanan }, { resi: nomor_resi }],
+            },
+        });
+
+        if (!isOrderIdExist)
+            throw "Nomor resi atau pesanan sudah terdaftar sebelumnya";
 
         // Masukan Data Ke Tabel Order
         const newOrder = await prisma.order.create({

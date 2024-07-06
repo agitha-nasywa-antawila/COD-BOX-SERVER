@@ -215,7 +215,7 @@ saveButton.addEventListener("click", async (e) => {
     }
 
     if (!response.success) {
-        alert(`Gagal Membuat Pesanan ${response.error}`);
+        alert(`Gagal Membuat Pesanan ${response.errors}`);
     }
 });
 
