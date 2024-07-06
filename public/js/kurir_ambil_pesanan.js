@@ -72,8 +72,8 @@ function renderCameraTemplate() {
         <div class="w-64 md:w-96 mx-auto bg-purple-200 p-2 rounded-md border border-purple-500">
             <h1 class="text-sm mb-4 text-purple-700 font-semibold">Cara Pengambilan Gambar</h1>
             <ol class="list-decimal ms-4 text-sm text-slate-600">
-                <li>Letakan Uang Anda Di Laci Yang Disediakan</li>
-                <li>Arahkan Kamera Ke Laci Tempat Uang, Tekan tombol AMBIL FOTO</li>
+                <li>Letakan Uang atau Barang Anda pada tempat Yang Disediakan</li>
+                <li>Arahkan Kamera Ke Tempat Uang/Barang, Tekan tombol AMBIL FOTO</li>
                 <li>Upload Gambar</li>
             </ol>
         </div>
