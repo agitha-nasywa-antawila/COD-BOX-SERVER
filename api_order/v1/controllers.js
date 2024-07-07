@@ -122,7 +122,7 @@ exports.userGenerateTokenForOpenBox = async (req, res) => {
         // Generate Token dan Expired Date
         const token = generateString(32);
         let expiredDate = new Date();
-        expiredDate.setTime(expiredDate.getTime() + 60_000);
+        expiredDate.setTime(expiredDate.getTime() + 3 * 60_000);
 
         // Lakukan update pada device yang digunakan
         await prisma.device.update({
