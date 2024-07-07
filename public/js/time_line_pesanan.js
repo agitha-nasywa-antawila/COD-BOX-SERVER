@@ -11,13 +11,17 @@ const params = new URLSearchParams(url.search);
 const urlTipePembayaran = params.get("payment");
 const urlResi = params.get("resi");
 
-const renderImage = (url) => {
+const renderImage = async (imageName) => {
+    const img = await httpRequest({
+        url: `/public/img/${imageName}`,
+        method: "GET",
+    });
     return `
-        <img class="aspect-video w-64 border-2 border-gray-100 shadow-sm bg-slate-300 rounded-md overflow-hidden mt-2" src="/public/img/${url}" alt="">
+        <img class="aspect-video w-64 border-2 border-gray-100 shadow-sm bg-slate-300 rounded-md overflow-hidden mt-2" src="${img.url}" alt="">
     `;
 };
 
-const timelineTemplate = (data) => {
+const timelineTemplate = async (data) => {
     return `
     <li class="mb-10 ms-6" id="timeline-${data.id}">
         <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
@@ -32,7 +36,7 @@ const timelineTemplate = (data) => {
             data.createdAt
         )} oleh ${data.user.username}</time>
 
-        ${data.value ? renderImage(data.value) : ""}
+        ${data.value ? await renderImage(data.value) : ""}
         
     </li>
     `;
@@ -40,7 +44,7 @@ const timelineTemplate = (data) => {
 
 // <p class="text-base font-normal text-gray-500 dark:text-gray-400">Pengguna menaruh uang dengan nominal Rp 8.000,00 pada box penyimpanan uang</p>
 
-const renderTimeline = (data) => {
+const renderTimeline = async (data) => {
     resiContainer.textContent = data.header.resi;
     ownerContainer.textContent = data.header.owner;
     orderCreationContainer.textContent = days(data.header.createdAt);
@@ -51,7 +55,7 @@ const renderTimeline = (data) => {
         const timelineData = data.timeline[i];
         timelineContainer.insertAdjacentHTML(
             "beforeend",
-            timelineTemplate(timelineData)
+            await timelineTemplate(timelineData)
         );
     }
 };
