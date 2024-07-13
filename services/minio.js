@@ -11,7 +11,7 @@ const upload = multer({ dest: "/tmp" });
 const minioClient = new Minio.Client({
     endPoint: String(process.env.MINIO_END_POINT),
     port: Number(process.env.MINIO_PORT),
-    useSSL: false,
+    useSSL: String(process.env.MINIO_SSL) == "true" ? true : false,
     accessKey: String(process.env.MINIO_ACCESS_KEY),
     secretKey: String(process.env.MINIO_SECRET_KEY),
 });
@@ -34,6 +34,7 @@ async function fileUploader(fileName, filePath) {
                 });
 
                 if (err) {
+                    console.log(err);
                     throw "Error uploading file: " + err;
                 }
             }
@@ -41,6 +42,7 @@ async function fileUploader(fileName, filePath) {
 
         return objectName;
     } catch (error) {
+        console.log(error);
         return error;
     }
 }
