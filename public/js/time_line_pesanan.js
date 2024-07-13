@@ -12,12 +12,8 @@ const urlTipePembayaran = params.get("payment");
 const urlResi = params.get("resi");
 
 const renderImage = async (imageName) => {
-    const img = await httpRequest({
-        url: `/public/img/${imageName}`,
-        method: "GET",
-    });
     return `
-        <img class="aspect-video w-64 border-2 border-gray-100 shadow-sm bg-slate-300 rounded-md overflow-hidden mt-2" src="${img.url}" alt="">
+        <img class="aspect-video w-64 border-2 border-gray-100 shadow-sm bg-slate-300 rounded-md overflow-hidden mt-2" src="/public/img/${imageName}" alt="">
     `;
 };
 
