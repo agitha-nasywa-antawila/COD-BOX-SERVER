@@ -65,18 +65,16 @@ const tableRowTemplate = (counter, data) => {
                 ${data.status_terakhir_deskripsi}
             </td>
             <td class="px-6 py-4">
-                ${
-                    data.isOrderComplate == true
-                        ? orderComplateTemplate(data.order_resi)
-                        : orderNotComplateTemplate(data.order_resi)
-                }
+                ${data.isOrderComplate == true
+            ? orderComplateTemplate(data.order_resi)
+            : orderNotComplateTemplate(data.order_resi)
+        }
             </td>
             <td class="px-6 py-4">
-                ${
-                    data.tipe_pembayaran === "COD"
-                        ? codPaymentTemplate()
-                        : onlinePaymentTemplate()
-                }
+                ${data.tipe_pembayaran === "COD"
+            ? codPaymentTemplate()
+            : onlinePaymentTemplate()
+        }
             </td>
         </tr>
     `;

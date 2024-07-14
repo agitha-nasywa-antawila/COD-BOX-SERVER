@@ -77,13 +77,13 @@ function renderQRTemplate() {
         <div id="qr-container" class="aspect-square mb-4 mx-auto w-64 border rounded-md overflow-hidden">Loading QR</div>
 
         <div class="w-64 md:w-96 mx-auto bg-purple-200 p-2 rounded-md border border-purple-500 mb-4">
-            <h1 class="text-center text-purple-700 font-semibold">QR Akan di perbaharui dalam 1 menit</h1>
+            <h1 class="text-center text-purple-700 font-semibold">QR Akan di perbaharui dalam 3 menit</h1>
         </div>
 
         <div class="w-64 md:w-96 mx-auto bg-purple-200 p-2 rounded-md border border-purple-500">
             <h1 class="text-sm mb-4 text-purple-700 font-semibold">Cara Penggunaan QR Code</h1>
             <ol class="list-decimal ms-4 text-sm text-slate-600">
-                <li>QR hanya memiliki masa aktif 1 menit</li>
+                <li>QR hanya memiliki masa aktif 3 menit</li>
                 <li>Gunakan QR Scaner yang berada di box</li>
                 <li>Arahkan sensor ke layar smartphone</li>
             </ol>
