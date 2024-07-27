@@ -138,11 +138,11 @@ async function generateQR() {
     const qrTitle = document.getElementById("qr-title");
     qrContainer.textContent = "";
 
-    if (String(boxType).toUpperCase() === "BOX") {
+    if (String(boxType).toUpperCase() == "BOX") {
         qrTitle.textContent = "BOX PENYIMPANAN BARANG";
     }
 
-    if (String(boxType).toUpperCase() === "LACI") {
+    if (String(boxType).toUpperCase() == "LACI") {
         qrTitle.textContent = "LACI PENYIMPANAN UANG";
     }
 
@@ -156,14 +156,15 @@ async function generateQR() {
 
     if (!qrResponse.success) {
         alert(`Gagal Membuat QR`);
-        return; // Added return to stop execution if QR generation fails
     }
 
-    qrContainer.textContent = ""; // Clear any existing content
-    let qrcode = new QRCode(
-        "qr-container",
-        JSON.stringify(qrResponse.data)
-    );
+    if (qrResponse.success) {
+        document.getElementById("qr-container").textContent = "";
+        let qrcode = new QRCode(
+            "qr-container",
+            JSON.stringify(qrResponse.data)
+        );
+    }
 }
 
 // Handle URL Change When Page First Load
@@ -173,7 +174,6 @@ const params = new URLSearchParams(url.search);
 const urlTipePembayaran = params.get("payment");
 const urlResi = params.get("resi");
 storeNomorResi = urlResi;
-
 generalDataLoader({
     url: `/api/v1/order/owner/order/${urlResi}`,
     func: async (data) => {
@@ -187,82 +187,162 @@ generalDataLoader({
         }
     },
 });
+generateQR();
 
-function startCamera() {
-    navigator.mediaDevices.enumerateDevices().then(devices => {
-        devices.forEach(device => {
-            if (device.kind === 'videoinput') {
-                deviceList.push(device);
-            }
-        });
+openBox.addEventListener("click", async (e) => {
+    e.preventDefault();
+    if (!storeNomorResi) {
+        alert("Buat Pesanana Terlebih Dahulu");
+        return;
+    }
 
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
+    // Jika container telah di destroy maka buat ulang
+    const qrContainer = document.getElementById("qr-container");
+    if (!qrContainer) {
+        container.textContent = "";
+        container.insertAdjacentHTML("beforeend", renderQRTemplate());
+    }
 
-        // Select the first video input device (front or back camera)
-        if (deviceList.length > 0) {
-            const constraints = {
-                video: {
-                    deviceId: { exact: deviceList[0].deviceId }
-                }
-            };
+    boxType = "BOX";
+    generateQR();
+});
 
-            navigator.mediaDevices.getUserMedia(constraints)
-                .then(stream => {
-                    video.srcObject = stream;
-                    video.play();
-                })
-                .catch(error => {
-                    console.error('Error accessing camera:', error);
-                });
-        }
-    });
-}
+openDrawer.addEventListener("click", async (e) => {
+    e.preventDefault();
+    if (!storeNomorResi) {
+        alert("Buat Pesanana Terlebih Dahulu");
+        return;
+    }
 
-function captureImage() {
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const context = canvas.getContext('2d');
-    const capturedImage = document.getElementById('capturedImage');
+    // Jika container telah di destroy maka buat ulang
+    const qrContainer = document.getElementById("qr-container");
+    if (!qrContainer) {
+        container.textContent = "";
+        container.insertAdjacentHTML("beforeend", renderQRTemplate());
+    }
+
+    boxType = "LACI";
+    generateQR();
+});
+
+takeMoneyPicture.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (!storeNomorResi) {
+        alert("Buat Pesanana Terlebih Dahulu");
+        return;
+    }
+
+    // Jika container telah di destroy maka buat ulang
+    const cameraContainer = document.getElementById("video");
+    if (!cameraContainer) {
+        container.textContent = "";
+        container.insertAdjacentHTML("beforeend", renderCameraTemplate());
+        startCamera();
+    }
+});
+
+takeGoodPicture.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (!storeNomorResi) {
+        alert("Buat Pesanana Terlebih Dahulu");
+        return;
+    }
+
+    // Jika container telah di destroy maka buat ulang
+    const cameraContainer = document.getElementById("video");
+    if (!cameraContainer) {
+        container.textContent = "";
+        container.insertAdjacentHTML("beforeend", renderCameraTemplate());
+        startCamera();
+    }
+});
+
+document.getElementById("capture").addEventListener("click", () => {
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const context = canvas.getContext("2d");
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Display the captured image
-    capturedImage.src = canvas.toDataURL('image/png');
-    capturedImage.style.display = 'block';
-    video.style.display = 'none';
-    canvas.style.display = 'none';
-    reTakeImage = true; // Set to true to indicate an image has been captured
-}
+    const capturedImage = document.getElementById("capturedImage");
+    capturedImage.src = canvas.toDataURL("image/png");
+    capturedImage.style.display = "block";
+    canvas.style.display = "none";
+});
 
-function uploadImage() {
-    const capturedImage = document.getElementById('capturedImage');
+document.getElementById("upload").addEventListener("click", async () => {
+    const capturedImage = document.getElementById("capturedImage");
+    const imageData = capturedImage.src;
 
-    if (capturedImage.src) {
-        // Implement image upload functionality here
-        console.log('Image ready for upload:', capturedImage.src);
+    if (!imageData) {
+        alert("Tidak ada gambar yang diambil!");
+        return;
+    }
+
+    // Send image data to server
+    const response = await httpRequest({
+        url: `/api/v1/upload`,
+        method: "POST",
+        body: {
+            image: imageData,
+            nomor_resi: storeNomorResi,
+        },
+    });
+
+    if (response.success) {
+        alert("Gambar berhasil diunggah!");
     } else {
-        alert('No image captured.');
+        alert("Gagal mengunggah gambar!");
+    }
+});
+
+async function startCamera() {
+    try {
+        // Get all video input devices
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+        // Check if there are video devices available
+        if (videoDevices.length === 0) {
+            throw new Error('No video devices found');
+        }
+
+        // Select the appropriate video device (front or rear)
+        let videoDeviceId;
+        if (videoDevices.length === 1) {
+            // Only one video device (typically front camera on laptops)
+            videoDeviceId = videoDevices[0].deviceId;
+        } else {
+            // More than one video device (mobile or multi-camera devices)
+            // Assuming the first device is the front camera and the second is the rear camera
+            videoDeviceId = videoDevices[1].deviceId; // Select rear camera if available
+        }
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { deviceId: videoDeviceId }
+        });
+        const video = document.getElementById("video");
+        video.srcObject = stream;
+    } catch (error) {
+        console.error("Error accessing the camera: ", error);
     }
 }
 
-function handleTakeMoneyPicture() {
-    if (reTakeImage) {
-        // Reset the camera for retaking the photo
-        document.getElementById('capturedImage').style.display = 'none';
-        document.getElementById('video').style.display = 'block';
-        startCamera(); // Restart the camera
-        reTakeImage = false;
-    } else {
-        captureImage(); // Capture image
-    }
+async function httpRequest({ url, method, body }) {
+    const response = await fetch(url, {
+        method: method || "GET",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body) || null
+    });
+    return await response.json();
 }
 
-document.getElementById('take-money-picture').addEventListener('click', handleTakeMoneyPicture);
-document.getElementById('upload').addEventListener('click', uploadImage);
-
-// Start the camera when the page loads
-window.onload = startCamera;
+async function generalDataLoader({ url, func }) {
+    const response = await fetch(url);
+    const data = await response.json();
+    func(data);
+}
