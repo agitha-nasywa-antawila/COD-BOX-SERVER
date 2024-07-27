@@ -138,11 +138,11 @@ async function generateQR() {
     const qrTitle = document.getElementById("qr-title");
     qrContainer.textContent = "";
 
-    if (String(boxType).toUpperCase() == "BOX") {
+    if (String(boxType).toUpperCase() === "BOX") {
         qrTitle.textContent = "BOX PENYIMPANAN BARANG";
     }
 
-    if (String(boxType).toUpperCase() == "LACI") {
+    if (String(boxType).toUpperCase() === "LACI") {
         qrTitle.textContent = "LACI PENYIMPANAN UANG";
     }
 
@@ -156,10 +156,11 @@ async function generateQR() {
 
     if (!qrResponse.success) {
         alert(`Gagal Membuat QR`);
+        return; // Added return to stop execution if QR generation fails
     }
 
     if (qrResponse.success) {
-        document.getElementById("qr-container").textContent = "";
+        qrContainer.textContent = ""; // Clear any existing content
         let qrcode = new QRCode(
             "qr-container",
             JSON.stringify(qrResponse.data)
@@ -174,6 +175,7 @@ const params = new URLSearchParams(url.search);
 const urlTipePembayaran = params.get("payment");
 const urlResi = params.get("resi");
 storeNomorResi = urlResi;
+
 generalDataLoader({
     url: `/api/v1/order/owner/order/${urlResi}`,
     func: async (data) => {
@@ -273,7 +275,7 @@ takeMoneyPicture.addEventListener("click", async (e) => {
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             let dataUrl = canvas.toDataURL("image/png");
             capturedImage.src = dataUrl;
-            if (reTakeImage == false) {
+            if (!reTakeImage) { // Updated condition to use the boolean correctly
                 capturedImage.style.display = "block";
                 video.style.display = "none";
                 captureButton.textContent = "Ambil Ulang";
@@ -320,20 +322,22 @@ takeGoodPicture.addEventListener("click", async (e) => {
         return;
     }
 
-    // Lakukan pengecekan apakah user sudah meletakan uang
-    // const resp = await httpRequest({
-    //     url: `/api/v1/kurir/take-good-picture/${storeNomorResi}`,
-    //     method: "GET",
-    // });
+    // Uncomment the code block below if checking if the order is ready for good picture is needed
+    /*
+    const resp = await httpRequest({
+        url: `/api/v1/kurir/take-good-picture/${storeNomorResi}`,
+        method: "GET",
+    });
 
-    // if (resp.success) {
-    //     if (!resp.data.isGoodHasDeliver) {
-    //         alert(
-    //             "Menu Belum Bisa Diakses Karena Pesanan Anda Belum Di Antar Kurir"
-    //         );
-    //         return;
-    //     }
-    // }
+    if (resp.success) {
+        if (!resp.data.isGoodHasDeliver) {
+            alert(
+                "Menu Belum Bisa Diakses Karena Pesanan Anda Belum Di Antar Kurir"
+            );
+            return;
+        }
+    }
+    */
 
     container.textContent = "";
     container.insertAdjacentHTML("beforeend", renderCameraTemplate());
@@ -353,7 +357,7 @@ takeGoodPicture.addEventListener("click", async (e) => {
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             let dataUrl = canvas.toDataURL("image/png");
             capturedImage.src = dataUrl;
-            if (reTakeImage == false) {
+            if (!reTakeImage) { // Updated condition to use the boolean correctly
                 capturedImage.style.display = "block";
                 video.style.display = "none";
                 captureButton.textContent = "Ambil Ulang";

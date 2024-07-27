@@ -284,7 +284,7 @@ takeMoneyPicture.addEventListener("click", async (e) => {
 
         await startCamera();
 
-        // Capture the photo
+        // ambil poto
         captureButton.addEventListener("click", function () {
             let context = canvas.getContext("2d");
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -363,7 +363,7 @@ takeGoodPicture.addEventListener("click", async (e) => {
 
         await startCamera();
 
-        // Capture the photo
+        // Ambil poto
         captureButton.addEventListener("click", function () {
             let context = canvas.getContext("2d");
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
