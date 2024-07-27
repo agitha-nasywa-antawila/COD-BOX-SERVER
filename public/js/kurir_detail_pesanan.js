@@ -225,99 +225,42 @@ openDrawer.addEventListener("click", async (e) => {
     generateQR();
 });
 
-takeMoneyPicture.addEventListener("click", (e) => {
+takeMoneyPicture.addEventListener("click", async (e) => {
     e.preventDefault();
-    if (!storeNomorResi) {
-        alert("Buat Pesanana Terlebih Dahulu");
-        return;
-    }
 
     // Jika container telah di destroy maka buat ulang
-    const cameraContainer = document.getElementById("video");
-    if (!cameraContainer) {
+    const videoContainer = document.getElementById("video");
+    if (!videoContainer) {
         container.textContent = "";
         container.insertAdjacentHTML("beforeend", renderCameraTemplate());
-        startCamera();
-    }
-});
-
-takeGoodPicture.addEventListener("click", (e) => {
-    e.preventDefault();
-    if (!storeNomorResi) {
-        alert("Buat Pesanana Terlebih Dahulu");
-        return;
     }
 
-    // Jika container telah di destroy maka buat ulang
-    const cameraContainer = document.getElementById("video");
-    if (!cameraContainer) {
-        container.textContent = "";
-        container.insertAdjacentHTML("beforeend", renderCameraTemplate());
-        startCamera();
-    }
-});
+    startCamera();
 
-document.getElementById("capture").addEventListener("click", () => {
-    const video = document.getElementById("video");
-    const canvas = document.getElementById("canvas");
-    const context = canvas.getContext("2d");
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    const capturedImage = document.getElementById("capturedImage");
-    capturedImage.src = canvas.toDataURL("image/png");
-    capturedImage.style.display = "block";
-    canvas.style.display = "none";
-});
-
-document.getElementById("upload").addEventListener("click", async () => {
-    const capturedImage = document.getElementById("capturedImage");
-    const imageData = capturedImage.src;
-
-    if (!imageData) {
-        alert("Tidak ada gambar yang diambil!");
-        return;
-    }
-
-    // Send image data to server
-    const response = await httpRequest({
-        url: `/api/v1/upload`,
-        method: "POST",
-        body: {
-            image: imageData,
-            nomor_resi: storeNomorResi,
-        },
+    document.getElementById("capture").addEventListener("click", (e) => {
+        e.preventDefault();
+        takePicture();
     });
 
-    if (response.success) {
-        alert("Gambar berhasil diunggah!");
-    } else {
-        alert("Gagal mengunggah gambar!");
-    }
+    document.getElementById("upload").addEventListener("click", (e) => {
+        e.preventDefault();
+        uploadImage();
+    });
 });
 
 async function startCamera() {
     try {
-        // Get all video input devices
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-        // Check if there are video devices available
         if (videoDevices.length === 0) {
             throw new Error('No video devices found');
         }
 
-        // Select the appropriate video device (front or rear)
-        let videoDeviceId;
-        if (videoDevices.length === 1) {
-            // Only one video device (typically front camera on laptops)
+        let videoDeviceId = videoDevices[0].deviceId;
+
+        if (videoDevices.length > 1) {
             videoDeviceId = videoDevices[0].deviceId;
-        } else {
-            // More than one video device (mobile or multi-camera devices)
-            // Assuming the first device is the front camera and the second is the rear camera
-            videoDeviceId = videoDevices[1].deviceId; // Select rear camera if available
         }
 
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -327,22 +270,49 @@ async function startCamera() {
         video.srcObject = stream;
     } catch (error) {
         console.error("Error accessing the camera: ", error);
+        alert("Tidak dapat mengakses kamera. Pastikan kamera tersedia dan diizinkan.");
     }
 }
 
-async function httpRequest({ url, method, body }) {
-    const response = await fetch(url, {
-        method: method || "GET",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body) || null
-    });
-    return await response.json();
+function takePicture() {
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const capturedImage = document.getElementById("capturedImage");
+
+    if (video && canvas) {
+        const context = canvas.getContext("2d");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const imageData = canvas.toDataURL("image/png");
+        capturedImage.src = imageData;
+        capturedImage.style.display = "block";
+        canvas.style.display = "none";
+    }
 }
 
-async function generalDataLoader({ url, func }) {
-    const response = await fetch(url);
-    const data = await response.json();
-    func(data);
+function uploadImage() {
+    const capturedImage = document.getElementById("capturedImage");
+
+    if (capturedImage.src) {
+        const formData = new FormData();
+        formData.append('image', capturedImage.src);
+
+        fetch('/upload-image-endpoint', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert('Gambar berhasil diunggah');
+                capturedImage.src = '';
+                capturedImage.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error uploading image:', error);
+                alert('Gagal mengunggah gambar');
+            });
+    }
 }
+
