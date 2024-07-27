@@ -159,13 +159,11 @@ async function generateQR() {
         return; // Added return to stop execution if QR generation fails
     }
 
-    if (qrResponse.success) {
-        qrContainer.textContent = ""; // Clear any existing content
-        let qrcode = new QRCode(
-            "qr-container",
-            JSON.stringify(qrResponse.data)
-        );
-    }
+    qrContainer.textContent = ""; // Clear any existing content
+    let qrcode = new QRCode(
+        "qr-container",
+        JSON.stringify(qrResponse.data)
+    );
 }
 
 // Handle URL Change When Page First Load
@@ -189,211 +187,82 @@ generalDataLoader({
         }
     },
 });
-generateQR();
 
-openBox.addEventListener("click", async (e) => {
-    e.preventDefault();
-    if (!storeNomorResi) {
-        alert("Buat Pesanana Terlebih Dahulu");
-        return;
-    }
-
-    // Jika container telah di destroy maka buat ulang
-    const qrContainer = document.getElementById("qr-container");
-    if (!qrContainer) {
-        container.textContent = "";
-        container.insertAdjacentHTML("beforeend", renderQRTemplate());
-    }
-
-    boxType = "BOX";
-    generateQR();
-});
-
-openDrawer.addEventListener("click", async (e) => {
-    e.preventDefault();
-    if (!storeNomorResi) {
-        alert("Buat Pesanana Terlebih Dahulu");
-        return;
-    }
-
-    // Jika container telah di destroy maka buat ulang
-    const qrContainer = document.getElementById("qr-container");
-    if (!qrContainer) {
-        container.textContent = "";
-        container.insertAdjacentHTML("beforeend", renderQRTemplate());
-    }
-
-    boxType = "LACI";
-    generateQR();
-});
-
-async function startCamera() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-        });
-        video.srcObject = stream;
-    } catch (error) {
-        console.error("Error accessing the camera: ", error);
-    }
-}
-
-// Convert dataURL to Blob
-function dataURLToBlob(dataURL) {
-    let byteString = atob(dataURL.split(",")[1]);
-    let mimeString = dataURL.split(",")[0].split(":")[1].split(";")[0];
-    let ab = new ArrayBuffer(byteString.length);
-    let ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ab], { type: mimeString });
-}
-
-takeMoneyPicture.addEventListener("click", async (e) => {
-    e.preventDefault();
-    if (!storeNomorResi) {
-        alert("Buat Pesanana Terlebih Dahulu");
-        return;
-    }
-
-    container.textContent = "";
-    container.insertAdjacentHTML("beforeend", renderCameraTemplate());
-
-    setTimeout(async () => {
-        let video = document.getElementById("video");
-        let canvas = document.getElementById("canvas");
-        let capturedImage = document.getElementById("capturedImage");
-        let captureButton = document.getElementById("capture");
-        let uploadButton = document.getElementById("upload");
-
-        await startCamera();
-
-        // Capture the photo
-        captureButton.addEventListener("click", function () {
-            let context = canvas.getContext("2d");
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            let dataUrl = canvas.toDataURL("image/png");
-            capturedImage.src = dataUrl;
-            if (!reTakeImage) { // Updated condition to use the boolean correctly
-                capturedImage.style.display = "block";
-                video.style.display = "none";
-                captureButton.textContent = "Ambil Ulang";
-                reTakeImage = true;
-            } else {
-                capturedImage.style.display = "none";
-                video.style.display = "block";
-                captureButton.textContent = "Ambil Foto";
-                reTakeImage = false;
+function startCamera() {
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+        devices.forEach(device => {
+            if (device.kind === 'videoinput') {
+                deviceList.push(device);
             }
         });
 
-        uploadButton.addEventListener("click", async () => {
-            let dataUrl = canvas.toDataURL("image/png");
-            let blob = dataURLToBlob(dataUrl);
-            let formData = new FormData();
-            formData.append("file", blob, "photo.png");
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
 
-            try {
-                let response = await fetch(
-                    `/api/v1/kurir/take-money-picture/${storeNomorResi}`,
-                    {
-                        method: "POST",
-                        body: formData,
-                    }
-                );
-
-                if (response.ok) {
-                    alert("Upload successful");
-                } else {
-                    alert("Upload failed");
+        // Select the first video input device (front or back camera)
+        if (deviceList.length > 0) {
+            const constraints = {
+                video: {
+                    deviceId: { exact: deviceList[0].deviceId }
                 }
-            } catch (error) {
-                alert("Error uploading the file:", error);
-            }
-        });
-    }, 50);
-});
+            };
 
-takeGoodPicture.addEventListener("click", async (e) => {
-    e.preventDefault();
-    if (!storeNomorResi) {
-        alert("Buat Pesanana Terlebih Dahulu");
-        return;
-    }
-
-    // Uncomment the code block below if checking if the order is ready for good picture is needed
-    /*
-    const resp = await httpRequest({
-        url: `/api/v1/kurir/take-good-picture/${storeNomorResi}`,
-        method: "GET",
-    });
-
-    if (resp.success) {
-        if (!resp.data.isGoodHasDeliver) {
-            alert(
-                "Menu Belum Bisa Diakses Karena Pesanan Anda Belum Di Antar Kurir"
-            );
-            return;
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(error => {
+                    console.error('Error accessing camera:', error);
+                });
         }
+    });
+}
+
+function captureImage() {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const capturedImage = document.getElementById('capturedImage');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Display the captured image
+    capturedImage.src = canvas.toDataURL('image/png');
+    capturedImage.style.display = 'block';
+    video.style.display = 'none';
+    canvas.style.display = 'none';
+    reTakeImage = true; // Set to true to indicate an image has been captured
+}
+
+function uploadImage() {
+    const capturedImage = document.getElementById('capturedImage');
+
+    if (capturedImage.src) {
+        // Implement image upload functionality here
+        console.log('Image ready for upload:', capturedImage.src);
+    } else {
+        alert('No image captured.');
     }
-    */
+}
 
-    container.textContent = "";
-    container.insertAdjacentHTML("beforeend", renderCameraTemplate());
+function handleTakeMoneyPicture() {
+    if (reTakeImage) {
+        // Reset the camera for retaking the photo
+        document.getElementById('capturedImage').style.display = 'none';
+        document.getElementById('video').style.display = 'block';
+        startCamera(); // Restart the camera
+        reTakeImage = false;
+    } else {
+        captureImage(); // Capture image
+    }
+}
 
-    setTimeout(async () => {
-        let video = document.getElementById("video");
-        let canvas = document.getElementById("canvas");
-        let capturedImage = document.getElementById("capturedImage");
-        let captureButton = document.getElementById("capture");
-        let uploadButton = document.getElementById("upload");
+document.getElementById('take-money-picture').addEventListener('click', handleTakeMoneyPicture);
+document.getElementById('upload').addEventListener('click', uploadImage);
 
-        await startCamera();
-
-        // Capture the photo
-        captureButton.addEventListener("click", function () {
-            let context = canvas.getContext("2d");
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            let dataUrl = canvas.toDataURL("image/png");
-            capturedImage.src = dataUrl;
-            if (!reTakeImage) { // Updated condition to use the boolean correctly
-                capturedImage.style.display = "block";
-                video.style.display = "none";
-                captureButton.textContent = "Ambil Ulang";
-                reTakeImage = true;
-            } else {
-                capturedImage.style.display = "none";
-                video.style.display = "block";
-                captureButton.textContent = "Ambil Foto";
-                reTakeImage = false;
-            }
-        });
-
-        uploadButton.addEventListener("click", async () => {
-            let dataUrl = canvas.toDataURL("image/png");
-            let blob = dataURLToBlob(dataUrl);
-            let formData = new FormData();
-            formData.append("file", blob, "photo.png");
-
-            try {
-                let response = await fetch(
-                    `/api/v1/kurir/take-good-picture/${storeNomorResi}`,
-                    {
-                        method: "POST",
-                        body: formData,
-                    }
-                );
-
-                if (response.ok) {
-                    alert("Upload successful, order finish");
-                    window.location = "/kurir/pesanan/list";
-                } else {
-                    alert("Upload failed");
-                }
-            } catch (error) {
-                alert("Error uploading the file:", error);
-            }
-        });
-    }, 50);
-});
+// Start the camera when the page loads
+window.onload = startCamera;
