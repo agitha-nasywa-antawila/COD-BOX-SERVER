@@ -180,7 +180,7 @@ generalDataLoader({
     func: async (data) => {
         storeTipePembayaran = data.tipe_pembayaran;
         if (storeTipePembayaran === "ONLINE") {
-            // Hilangkan bagian ambil foto uang dan buka laci, karena pembelian dengan online payment tidak perlu melakukan hal itu
+            // Hide box and take money picture options if payment type is ONLINE
             document.getElementById("drawer-toggle").classList.add("hidden");
             document
                 .getElementById("take-money-picture")
@@ -226,10 +226,26 @@ openDrawer.addEventListener("click", async (e) => {
     generateQR();
 });
 
+// Function to start the camera with automatic selection of front or back camera on mobile devices
 async function startCamera() {
     try {
+        // Dapatkan daftar perangkat media
+        const devices = await navigator.mediaDevices.enumerateDevices();
+
+        // Temukan ID kamera depan dan belakang (jika ada)
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        let selectedDeviceId = videoDevices.length > 0 ? videoDevices[0].deviceId : null; // Default ke kamera pertama
+
+        // Pilih kamera depan atau belakang jika perangkat mobile
+        if (navigator.userAgent.match(/(iPad|iPhone|iPod|Android)/i)) {
+            selectedDeviceId = videoDevices.find(device => device.label.toLowerCase().includes('back'))?.deviceId || selectedDeviceId;
+        }
+
+        // Mulai stream kamera
         const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
+            video: {
+                deviceId: selectedDeviceId
+            }
         });
         video.srcObject = stream;
     } catch (error) {
