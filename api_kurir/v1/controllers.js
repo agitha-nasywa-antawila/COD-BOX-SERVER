@@ -344,29 +344,3 @@ exports.kurirOrderList = async (req, res) => {
         return resError({ res, errors: error });
     }
 };
-
-exports.detail = async (req, res) => {
-    try {
-        const id = await getUser(req);
-        const user = await prisma.user.findUnique({
-            where: { id },
-            select: {
-                username: true,
-                email: true,
-                profil: { select: { full_name: true, photo: true } },
-                role: { select: { name: true } },
-            },
-        });
-        return resSuccess({
-            res,
-            title: "Success get user information",
-            data: user,
-        });
-    } catch (error) {
-        return resError({
-            res,
-            title: "Failed to get user data",
-            errors: error,
-        });
-    }
-};
